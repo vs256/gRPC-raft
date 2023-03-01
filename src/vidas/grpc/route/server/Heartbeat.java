@@ -34,7 +34,7 @@ public class Heartbeat {
 	private static final void response(Route reply) {
 		// TODO handle the reply/response from the server
 		var payload = new String(reply.getPayload().toByteArray());
-		System.out.println(" ** Reply: " + reply.getId() + ", from: " + reply.getOrigin());
+		System.out.println(" ** Reply: " + reply.getId() + " | from: " + reply.getOrigin() + " | path: " + reply.getPath() + " |");
 
 		//Need to send a heartbeat
 	}

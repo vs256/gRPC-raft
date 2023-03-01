@@ -33,7 +33,7 @@ public class Engine {
 	protected LinkedBlockingDeque<Work> workQueue, mgmtQueue;
 
 	/* worker threads */
-	protected ArrayList<Worker> workers;
+	protected ArrayList<Election> workers;
 	protected MgmtWorker manager;
 
 	/* connectivity */
@@ -120,8 +120,8 @@ public class Engine {
 		mgmtQueue = new LinkedBlockingDeque<Work>();
 
 		Engine.logger.info("Starting Workers");
-		workers = new ArrayList<Worker>();
-		var w = new Worker();
+		workers = new ArrayList<Election>();
+		var w = new Election();
 		workers.add(w);
 		w.start();
 		
@@ -152,7 +152,7 @@ public class Engine {
 	}
 
 	public synchronized void increaseWorkers() {
-		var w = new Worker();
+		var w = new Election();
 		workers.add(0, w);
 		w.start();
 	}

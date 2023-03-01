@@ -119,12 +119,12 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			// if (MgmtWorker.isPriority(request))
 			// Engine.getInstance().mgmtQueue.add(w);
 			// else
-			if (request.getPath().contains("/nominate")) {
-				if (Engine.getInstance().getServerRole() == "follower") {
-					Worker worker = Engine.getInstance().workers.get(0);
-					worker.interrupt();
-				}
-			}
+			// if (request.getPath().contains("/nominate")) {
+			// 	if (Engine.getInstance().getServerRole() == "follower") {
+			// 		Election worker = Engine.getInstance().workers.get(0);
+			// 		worker.interrupt();
+			// 	}
+			// }
 			Engine.getInstance().workQueue.add(w);
 			// Engine.getInstance().workQueue.add(w);
 			//
