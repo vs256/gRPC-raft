@@ -73,6 +73,7 @@ public class Election extends Thread {
 
 				Thread.sleep(10000);
 				Engine.getInstance().serverTerm++;
+				
 				// System.out.println("test");
 				var w = Engine.getInstance().workQueue.poll();
 				doElection(w);
@@ -100,7 +101,7 @@ public class Election extends Thread {
 
 				// become candidate
 				engine.serverRole = "candidate";
-				// engine.serverTerm++; // increment term by 1
+				engine.serverTerm++; // increment term by 1
 
 				System.out
 						.println(
