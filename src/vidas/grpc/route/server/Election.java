@@ -151,7 +151,7 @@ public class Election extends Thread {
 					String voteRequestResponse = w.request.getPath().split("/")[4]; //accept or reject
 					if(voteRequestResponse.contains("accept"))
 					{
-
+						System.out.println("I reach accept");
 					}
 					else //reject
 					{
