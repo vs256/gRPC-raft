@@ -79,10 +79,10 @@ public class Engine {
 			throw new RuntimeException("server not configured!");
 		}
 
-		if (manager != null) {
-			Engine.logger.error("trying to re-init() logistics!");
-			return;
-		}
+		// if (manager != null) {
+		// 	Engine.logger.error("trying to re-init() logistics!");
+		// 	return;
+		// }
 
 		// extract settings. Here we are using basic properties which, requires
 		// type checking and should also include range checking as well.
@@ -106,25 +106,25 @@ public class Engine {
 		links = new ArrayList<Link>();
 		//get the server connect link and add it to the arrayList
 		createLink("server.connect1.name","server.connect1.id","server.connect1.port");
-		createLink("server.connect2.name","server.connect2.id","server.connect2.port");
+		//createLink("server.connect2.name","server.connect2.id","server.connect2.port");
 
 		// links
 
-		serverName = conf.getProperty("server.name");
+		serverName = conf.getProperty("server.name"); //set server name
 
 		serverTerm = 0L; //terms starting at 0
 		serverRole = "follower"; //all servers start as followers
 
-		Engine.logger.info("starting queues");
+		Engine.logger.info("Starting Queues");
 		workQueue = new LinkedBlockingDeque<Work>();
 		mgmtQueue = new LinkedBlockingDeque<Work>();
 
-		Engine.logger.info("starting workers");
+		Engine.logger.info("Starting Workers");
 		workers = new ArrayList<Worker>();
 		var w = new Worker();
 		workers.add(w);
 		w.start();
-
+		
 		Engine.logger.info("starting manager");
 		manager = new MgmtWorker();
 		manager.start();
@@ -148,7 +148,7 @@ public class Engine {
 			w.shutdown();
 		}
 
-		manager.shutdown();
+		//manager.shutdown();
 	}
 
 	public synchronized void increaseWorkers() {

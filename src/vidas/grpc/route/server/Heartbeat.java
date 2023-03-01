@@ -11,15 +11,15 @@ import vidas.grpc.route.server.Engine;
 
 
 
-public class ForwardMessage {
+public class Heartbeat {
 	// when using server.conf
 
 	// private static long clientID = 100;
 	// private static int port = 2100;
 
-	private static final Route constructMessage(int mID, int toID, int origin, String path, ByteString payload) {
+	private static final Route constructMessage(long msgID, long toID, long origin, String path, ByteString payload) {
 		Route.Builder bld = Route.newBuilder();
-		bld.setId(mID);
+		bld.setId(msgID);
 		bld.setDestination(toID);
 		bld.setOrigin(origin);
 		bld.setPath(path);
@@ -34,19 +34,21 @@ public class ForwardMessage {
 	private static final void response(Route reply) {
 		// TODO handle the reply/response from the server
 		var payload = new String(reply.getPayload().toByteArray());
-		System.out.println("reply: " + reply.getId() + ", from: " + reply.getOrigin());
+		System.out.println(" ** Reply: " + reply.getId() + ", from: " + reply.getOrigin());
+
+		//Need to send a heartbeat
 	}
 
-	public static void forwardMessage(int serverPort, int refID, int destID, int origin, ByteString payload) {
+	public static void sendHeartbeat(int serverPort, long referenceID, long destinationID, long origin, String path, ByteString payload) {
+
 		ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", serverPort).usePlaintext().build();
 		RouteServiceGrpc.RouteServiceBlockingStub stub = RouteServiceGrpc.newBlockingStub(ch);
 
-		final int destinationID = destID; // 1234;
 
 		// simulate different type of messages that can be sent
 		String sp = String.valueOf(Engine.getInstance().getServerID());
-		var path = (refID % 5 == 0) ? "/election/" + sp : "/nomination/to-somewhere";
-		var msg = ForwardMessage.constructMessage(refID, destinationID, origin, path, payload);
+		// var path = (referenceID % 5 == 0) ? "/election/" + sp : "/nomination/to-somewhere";
+		var msg = constructMessage(referenceID, destinationID, origin, path, payload);
 
 		// blocking!
 		var r = stub.request(msg);

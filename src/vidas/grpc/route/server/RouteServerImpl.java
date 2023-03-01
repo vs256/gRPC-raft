@@ -12,7 +12,6 @@ import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import route.RouteServiceGrpc.RouteServiceImplBase;
 
-
 public class RouteServerImpl extends RouteServiceImplBase {
 	private Server svr;
 
@@ -75,21 +74,10 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 		svr = ServerBuilder.forPort(engine.getServerPort()).addService(new RouteServerImpl()).build();
 
-		
-		Engine.logger.info("Starting Server " + engine.serverName + " | server.id = " + engine.getServerID() + " | server.port = "
-				+ engine.getServerPort() + " |");
+		Engine.logger.info(
+				"Starting Server " + engine.serverName + " | server.id = " + engine.getServerID() + " | server.port = "
+						+ engine.getServerPort() + " |");
 		svr.start();
-
-		// //heartbeats
-		// Engine.logger.info("starting heartbeats");
-		// for(Link l : Engine.getInstance().links)
-		// {
-		// 	int i = 0;
-		// 	ForwardMessage.forwardMessage(l.getPort(), i, l.getServerID(), (int) (long) Engine.getInstance().serverID, ByteString.copyFromUtf8("heartbeat"));
-		// 	i++;
-		// 	Engine.logger.info("sending heartbeat " + i + " to " + l.getServerID());
-		// }
-		// //
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -128,10 +116,18 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 			// delay work
 			var w = new Work(request, responseObserver);
-			if (MgmtWorker.isPriority(request))
-				Engine.getInstance().mgmtQueue.add(w);
-			else
-				Engine.getInstance().workQueue.add(w);
+			// if (MgmtWorker.isPriority(request))
+			// Engine.getInstance().mgmtQueue.add(w);
+			// else
+			if (request.getPath().contains("/nominate")) {
+				if (Engine.getInstance().getServerRole() == "follower") {
+					Worker worker = Engine.getInstance().workers.get(0);
+					worker.interrupt();
+				}
+			}
+			Engine.getInstance().workQueue.add(w);
+			// Engine.getInstance().workQueue.add(w);
+			//
 
 			if (Engine.logger.isDebugEnabled())
 				Engine.logger.debug("request() qsize = " + Engine.getInstance().workQueue.size());
@@ -146,6 +142,7 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 			// TODO ack of work
 			ack.setPayload(ack(request));
+
 		} else {
 			// TODO rejecting the request - what do we do?
 			// buildRejection(ack,request);

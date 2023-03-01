@@ -7,7 +7,6 @@ import io.grpc.ManagedChannelBuilder;
 import route.Route;
 import route.RouteServiceGrpc;
 
-
 public class RouteClient {
 	// when using server.conf
 	private static long clientID = 501;
@@ -39,12 +38,14 @@ public class RouteClient {
 		ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", RouteClient.port).usePlaintext().build();
 		RouteServiceGrpc.RouteServiceBlockingStub stub = RouteServiceGrpc.newBlockingStub(ch);
 
-		final int destID = 3000; //1234;
+		final int destID = 1000; // 1234;
 		final int I = 1;
 		for (int i = 0; i < I; i++) {
 
 			// simulate different type of messages that can be sent
-			var path = (i % 5 == 0) ? "/election/manage-something" : "/nominate/to-somewhere";
+			// var path = (i % 5 == 0) ? "/election/manage-something" :
+			// "/nominate/to-somewhere";
+			String path = "/election";
 			var msg = RouteClient.constructMessage(i, destID, path, "hello " + i);
 
 			// blocking!

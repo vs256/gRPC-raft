@@ -1,4 +1,4 @@
-# Route Blocking (lab 2) 
+# Route Blocking
 
 We have switched from the basic socket example to a more realistic 
 view of a basic communication stack (gRPC, Protobut) by introducing a
