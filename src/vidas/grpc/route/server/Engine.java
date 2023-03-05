@@ -36,6 +36,8 @@ public class Engine {
 	protected ArrayList<Election> workers;
 	protected MgmtWorker manager;
 
+	protected int nominationVotes = 0;
+
 	/* connectivity */
 	protected ArrayList<Link> links;
 

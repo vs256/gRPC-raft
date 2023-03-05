@@ -119,12 +119,26 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			// if (MgmtWorker.isPriority(request))
 			// Engine.getInstance().mgmtQueue.add(w);
 			// else
-			// if (request.getPath().contains("/nominate")) {
-			// 	if (Engine.getInstance().getServerRole() == "follower") {
-			// 		Election worker = Engine.getInstance().workers.get(0);
-			// 		worker.interrupt();
-			// 	}
-			// }
+			if (request.getPath().contains("/nominate")) {
+				if (Engine.getInstance().getServerRole() == "follower") {
+					Election worker = Engine.getInstance().workers.get(0);
+					System.out.println("* request path contains /nominate & this server is a follower therefore interrupting server worker & setting resetTimer to true | ");
+					worker.resetTimer = true;
+					worker.interrupt();
+				}
+				if (Engine.getInstance().getServerRole() == "candidate") { //got a nominate vote. TODO CHECK IF ACCECPT OR REJECT
+					{
+						Engine.getInstance().nominationVotes++;
+						//then if majority nomination votes proceed to become a leader
+						if(Engine.getInstance().nominationVotes >= 2)
+						{
+							Engine.getInstance().nominationVotes = 0; //reset nomination votes
+							Engine.getInstance().serverRole = "leader"; //become leader
+							System.out.println("this candidate server nominationVotes is >= 2 therefore this becomes a leader");
+							//might need to interrupt timer for leader role now
+						}
+					}
+			}
 			Engine.getInstance().workQueue.add(w);
 			// Engine.getInstance().workQueue.add(w);
 			//

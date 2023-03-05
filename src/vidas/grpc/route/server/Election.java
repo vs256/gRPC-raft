@@ -11,6 +11,8 @@ public class Election extends Thread {
 	protected static Logger logger = LoggerFactory.getLogger("worker");
 	private boolean forever = true;
 
+	public boolean resetTimer = false;
+
 	public Election() {
 
 	}
@@ -72,12 +74,14 @@ public class Election extends Thread {
 				// Thread.sleep(random.nextInt(20000 - 2000 + 1) + 2000);
 
 				Thread.sleep(10000);
-				Engine.getInstance().serverTerm++;
-				
-				// System.out.println("test");
-				var w = Engine.getInstance().workQueue.poll();
-				doElection(w);
-				// if(w == null) startNominations();
+				if (resetTimer == false) {
+					Engine.getInstance().serverTerm++; //timer ended so incrementing server term
+					// System.out.println("test");
+					var w = Engine.getInstance().workQueue.poll();
+					doElection(w);
+					// if(w == null) startNominations();
+				}
+				else { resetTimer = true;}
 
 			} catch (Exception e) {
 				logger.error("worker failure", e);
@@ -124,12 +128,12 @@ public class Election extends Thread {
 			if (w.request.getPath().contains("/nominate")) // follower receives a vote request
 			{
 				long requestServerTerm = Long.parseLong(w.request.getPath().split("/")[2]);
-				System.out.println("reaches follower /nominate | comparing " + requestServerTerm + " == " + engine.serverTerm);
+				System.out.println(
+						"reaches follower /nominate | comparing " + requestServerTerm + " == " + engine.serverTerm);
 				if (requestServerTerm == engine.serverTerm) // if request term matches this server term
 				{
-					engine.serverTerm++; // increment server term
-
-					// vote either /accept if it has not voted on current term
+					
+					// vote /accept if it has not voted on current term
 					long referenceID = engine.getNextMessageID();
 					String path = w.request.getPath() + "/accept";
 					int serverPort = Integer.parseInt(w.request.getPath().split("/")[3]);
@@ -143,18 +147,18 @@ public class Election extends Thread {
 				}
 			}
 		} else if (engine.getServerRole() == "candidate") {
-			if (w.request.getPath().contains("/nominate")) // candidated received response of vote request, either /accept or /reject
+			if (w.request.getPath().contains("/nominate")) // candidated received response of vote request, either
+															// /accept or /reject
 			{
 				long requestServerTerm = Long.parseLong(w.request.getPath().split("/")[2]);
-				System.out.println("reaches candidate /nominate | comparing " + requestServerTerm + " == " + engine.serverTerm);
+				System.out.println(
+						"reaches candidate /nominate | comparing " + requestServerTerm + " == " + engine.serverTerm);
 				if (requestServerTerm == engine.serverTerm) // if request term matches this server term
 				{
-					String voteRequestResponse = w.request.getPath().split("/")[4]; //accept or reject
-					if(voteRequestResponse.contains("accept"))
-					{
+					String voteRequestResponse = w.request.getPath().split("/")[4]; // accept or reject
+					if (voteRequestResponse.contains("accept")) {
 						System.out.println("I reach accept");
-					}
-					else //reject
+					} else // reject
 					{
 
 					}
