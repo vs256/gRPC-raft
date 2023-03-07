@@ -36,7 +36,7 @@ public class Worker extends Thread {
 
 		if (w.request.getPath().contains("/nominate")) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -67,11 +67,11 @@ public class Worker extends Thread {
 						+ engine.serverTerm + " ** \n";
 				engine.gui.setLabel(str);
 				// DEBUG PRINT
-				Engine.getInstance().election.electionTimerTask();
+				//Engine.getInstance().election.electionTimerTask();
 			}
 		} else if (w.request.getPath().contains("/heartbeat")) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -80,7 +80,7 @@ public class Worker extends Thread {
 			if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
 
 				engine.serverStateMachine.nominationVotes = 0;
-				engine.election.electionTimerTask(); // reset election timer
+				//engine.election.electionTimerTask(); // reset election timer
 
 				// DEBUG PRINT
 				// System.out.println(" ** " + "Term: " + engine.serverTerm + " || State: "
@@ -132,7 +132,7 @@ public class Worker extends Thread {
 				// DEBUG PRINT
 				engine.serverStateMachine.state = engine.serverStateMachine.state.previousState();
 				engine.serverStateMachine.nominationVotes = 0;
-				engine.election.electionTimerTask(); // reset election timer
+				//engine.election.electionTimerTask(); // reset election timer
 
 			}
 		}

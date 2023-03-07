@@ -14,10 +14,10 @@ public class Election extends Thread {
 	private TimerTask electionTask;
 
 	public Election() {
-		electionTimerTask();
+		electionTimerTask(0);
 	}
 
-	public void electionTimerTask() {
+	public void electionTimerTask(long delay) {
 
 		//
 		if (electionTask != null) {
@@ -35,6 +35,7 @@ public class Election extends Thread {
 				i++;
 				if (i % seconds == 0) {
 					System.out.println("Timer action!");
+					electionTimerTask(delay); // reset election timer for itself
 
 					// System.out.println("task is running so happy");
 					Engine engine = Engine.getInstance();
@@ -68,12 +69,12 @@ public class Election extends Thread {
 						// DEBUG PRINT
 
 						engine.serverStateMachine.state.sendNominateRequest();
-						//electionTimerTask(); // reset election timer for itself after becoming candidate
+						
 					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
 						// did not get back majority nominate requests, trying again as a candidate on
 						// same term
 						engine.serverStateMachine.state.sendNominateRequest(); // vote for me request
-						electionTimerTask(); // reset election timer after sending out requests
+						//electionTimerTask(); // reset election timer after sending out requests
 					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Leader) {
 						engine.serverStateMachine.state.sendLeaderHeartbeat();
 						System.out.println("sending leader heartbeat " + engine.getNextMessageID());
@@ -88,7 +89,7 @@ public class Election extends Thread {
 		};
 		Timer timer = new Timer("Timer");
 		// long delay = 20000L;
-		timer.schedule(electionTask, 0, 1000);
+		timer.schedule(electionTask, delay, 1000);
 		//
 	}
 

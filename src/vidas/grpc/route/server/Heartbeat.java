@@ -79,7 +79,7 @@ public class Heartbeat {
 				engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // going from candidate
 																								// to leader
 
-				engine.election.electionTimerTask();
+				//engine.election.electionTimerTask();
 
 			}
 		} else if (reply.getPath().contains("reject")) {
@@ -103,7 +103,7 @@ public class Heartbeat {
 				engine.gui.setLabel(str);
 				// DEBUG PRINT
 
-				engine.election.electionTimerTask();
+				//engine.election.electionTimerTask();
 
 			}
 
@@ -157,8 +157,13 @@ public class Heartbeat {
 			@Override
 			public void onNext(Route note) {
 				
-				//response(note);
+				response(note);
 				System.out.println("Got path: " + note.getPath());
+				// if(note.getPath().contains("/nominate"))
+				// {
+				// 	System.out.println("resetting election timer");
+				// 	Engine.getInstance().election.electionTimerTask();
+				// }
 				// var msg = constructMessage(referenceID, destinationID, origin, path,
 				// payload);
 				// stub.biDirectionalrequest(msg, this);

@@ -175,15 +175,15 @@ public class RouteServerImpl extends RouteServiceImplBase {
 				if (engine.serverStateMachine.votedFor == "") {
 					ack.setPath(request.getPath() + "/accept");
 					engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-					engine.election.electionTimerTask();
+					// engine.election.electionTimerTask();
 				} else if (engine.serverStateMachine.votedFor == serverWhoIsAskingForVote) {
 					ack.setPath(request.getPath() + "/accept");
-					engine.election.electionTimerTask();
+					// engine.election.electionTimerTask();
 				} else {
 					ack.setPath(request.getPath() + "/reject");
 				}
 			} else if (request.getPath().contains("/heartbeat")) {
-				engine.election.electionTimerTask();
+				// engine.election.electionTimerTask();
 				ack.setPath(request.getPath() + "/success");
 			}
 
@@ -205,8 +205,8 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		return new StreamObserver<route.Route>() {
 			@Override
 			public void onNext(route.Route request) {
-				// //request(note, responseObserver);
-				// List<route.Route> notes = getOrCreateNotes(note);
+				//request(note, responseObserver);
+				// List<route.Route> notes = getOrCreateNotes(request);
 
 				// // Respond with all previous notes at this location.
 				// for (route.Route prevNote : notes.toArray(new route.Route[0])) {
@@ -214,11 +214,11 @@ public class RouteServerImpl extends RouteServiceImplBase {
 				// }
 
 				// // Now add the new note to the list
-				// notes.add(note);
+				// notes.add(request);
 
 				// ack work
 				route.Route.Builder ack = null;
-				if (verify(request)) {
+				if (true) {
 
 					// delay work
 					var w = new Work(request, responseObserver);
@@ -268,21 +268,30 @@ public class RouteServerImpl extends RouteServiceImplBase {
 					Engine engine = Engine.getInstance();
 					if (request.getPath().contains("/nominate")) {
 
-						String serverWhoIsAskingForVote = request.getPath().split("/")[3];
-						// String requestServerTerm = request.getPath().split("/")[2];
-						if (engine.serverStateMachine.votedFor == "") {
-							ack.setPath(request.getPath() + "/accept");
-							engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-							engine.election.electionTimerTask();
-						} else if (engine.serverStateMachine.votedFor == serverWhoIsAskingForVote) {
-							ack.setPath(request.getPath() + "/accept");
-							engine.election.electionTimerTask();
-						} else {
+						if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
+							String serverWhoIsAskingForVote = request.getPath().split("/")[3];
+							// String requestServerTerm = request.getPath().split("/")[2];
+							if (engine.serverStateMachine.votedFor == "") {
+								ack.setPath(request.getPath() + "/accept");
+								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+								
+								engine.election.electionTimerTask(2000L);
+
+							} else if (engine.serverStateMachine.votedFor == serverWhoIsAskingForVote) {
+								ack.setPath(request.getPath() + "/accept");
+								
+								engine.election.electionTimerTask(2000L);
+							} else {
+								ack.setPath(request.getPath() + "/reject");
+							}
+						} 
+						else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
 							ack.setPath(request.getPath() + "/reject");
 						}
 					} else if (request.getPath().contains("/heartbeat")) {
-						engine.election.electionTimerTask();
 						ack.setPath(request.getPath() + "/success");
+						
+						engine.election.electionTimerTask(2000L);
 					}
 
 					// TODO ack of work
@@ -294,6 +303,7 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 				route.Route rtn = ack.build();
 				responseObserver.onNext(rtn); // sends back response
+
 			}
 
 			@Override
