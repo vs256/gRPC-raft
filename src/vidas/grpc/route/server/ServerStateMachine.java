@@ -72,15 +72,16 @@ public class ServerStateMachine {
 				String path = "/nominate/" + engine.serverTerm + "/" + engine.getServerPort();
 
                 // DEBUG PRINT
-                System.out.println(" ** " + "Term: " + engine.serverTerm + " || State: "
+                String str = " ** " + "Term: " + engine.serverTerm + " || State: "
                         + engine.serverStateMachine.state.toString() + " || votedFor: "
                         + engine.serverStateMachine.votedFor + " || nominationVotes: "
                         + engine.serverStateMachine.nominationVotes + " || Type: sendNominateRequest()|| Origin: "
                         + engine.getServerPort() + " || Destination: " + l.getServerID() + " || Path: "
-                        + path + " || " + " || Reason: sending nominate vote request" + " ** \n");
+                        + path + " || " + " || Reason: sending nominate vote request" + " ** \n";
+                engine.gui.setLabel(str);
                 // DEBUG PRINT
 
-				Heartbeat.sendHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
+				Heartbeat.sendNonBlockingHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
 						ByteString.copyFromUtf8("term: " + engine.serverTerm));
 
 			}
@@ -97,15 +98,16 @@ public class ServerStateMachine {
 
 
                 //DEBUG PRINT
-				System.out.println(" ** " + "Term: " + engine.serverTerm + " || State: "
+				String str = " ** " + "Term: " + engine.serverTerm + " || State: "
                 + engine.serverStateMachine.state.toString() + " || votedFor: "
                 + engine.serverStateMachine.votedFor + " || nominationVotes: "
                 + engine.serverStateMachine.nominationVotes + " || Type: sendLeaderHeartbeat()|| Origin: "
                 + engine.getServerPort() + " || Destination: " + l.getServerID() + " || Path: "
-                + path + " || " + " || Reason: sending leader heartbeat request" + " ** \n");
+                + path + " || " + " || Reason: sending leader heartbeat request" + " ** \n";
+                engine.gui.setLabel(str);
                 //DEBUG PRINT
 
-				Heartbeat.sendHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
+				Heartbeat.sendNonBlockingHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
 						ByteString.copyFromUtf8("term: " + engine.serverTerm));
 
 			}

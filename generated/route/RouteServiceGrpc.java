@@ -46,6 +46,99 @@ public final class RouteServiceGrpc {
     return getRequestMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<route.Route,
+      route.Route> getNominateRequestMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "nominateRequest",
+      requestType = route.Route.class,
+      responseType = route.Route.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<route.Route,
+      route.Route> getNominateRequestMethod() {
+    io.grpc.MethodDescriptor<route.Route, route.Route> getNominateRequestMethod;
+    if ((getNominateRequestMethod = RouteServiceGrpc.getNominateRequestMethod) == null) {
+      synchronized (RouteServiceGrpc.class) {
+        if ((getNominateRequestMethod = RouteServiceGrpc.getNominateRequestMethod) == null) {
+          RouteServiceGrpc.getNominateRequestMethod = getNominateRequestMethod =
+              io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "nominateRequest"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("nominateRequest"))
+              .build();
+        }
+      }
+    }
+    return getNominateRequestMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<route.Route,
+      route.Route> getVoteRequestMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "voteRequest",
+      requestType = route.Route.class,
+      responseType = route.Route.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<route.Route,
+      route.Route> getVoteRequestMethod() {
+    io.grpc.MethodDescriptor<route.Route, route.Route> getVoteRequestMethod;
+    if ((getVoteRequestMethod = RouteServiceGrpc.getVoteRequestMethod) == null) {
+      synchronized (RouteServiceGrpc.class) {
+        if ((getVoteRequestMethod = RouteServiceGrpc.getVoteRequestMethod) == null) {
+          RouteServiceGrpc.getVoteRequestMethod = getVoteRequestMethod =
+              io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "voteRequest"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("voteRequest"))
+              .build();
+        }
+      }
+    }
+    return getVoteRequestMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<route.Route,
+      route.Route> getBiDirectionalRequestMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "biDirectionalRequest",
+      requestType = route.Route.class,
+      responseType = route.Route.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+  public static io.grpc.MethodDescriptor<route.Route,
+      route.Route> getBiDirectionalRequestMethod() {
+    io.grpc.MethodDescriptor<route.Route, route.Route> getBiDirectionalRequestMethod;
+    if ((getBiDirectionalRequestMethod = RouteServiceGrpc.getBiDirectionalRequestMethod) == null) {
+      synchronized (RouteServiceGrpc.class) {
+        if ((getBiDirectionalRequestMethod = RouteServiceGrpc.getBiDirectionalRequestMethod) == null) {
+          RouteServiceGrpc.getBiDirectionalRequestMethod = getBiDirectionalRequestMethod =
+              io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "biDirectionalRequest"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.Route.getDefaultInstance()))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("biDirectionalRequest"))
+              .build();
+        }
+      }
+    }
+    return getBiDirectionalRequestMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -101,6 +194,27 @@ public final class RouteServiceGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getRequestMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void nominateRequest(route.Route request,
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getNominateRequestMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void voteRequest(route.Route request,
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getVoteRequestMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.Route> biDirectionalRequest(
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getBiDirectionalRequestMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -110,6 +224,27 @@ public final class RouteServiceGrpc {
                 route.Route,
                 route.Route>(
                   this, METHODID_REQUEST)))
+          .addMethod(
+            getNominateRequestMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                route.Route,
+                route.Route>(
+                  this, METHODID_NOMINATE_REQUEST)))
+          .addMethod(
+            getVoteRequestMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                route.Route,
+                route.Route>(
+                  this, METHODID_VOTE_REQUEST)))
+          .addMethod(
+            getBiDirectionalRequestMethod(),
+            io.grpc.stub.ServerCalls.asyncBidiStreamingCall(
+              new MethodHandlers<
+                route.Route,
+                route.Route>(
+                  this, METHODID_BI_DIRECTIONAL_REQUEST)))
           .build();
     }
   }
@@ -135,6 +270,30 @@ public final class RouteServiceGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getRequestMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void nominateRequest(route.Route request,
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getNominateRequestMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void voteRequest(route.Route request,
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getVoteRequestMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.Route> biDirectionalRequest(
+        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
+      return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
+          getChannel().newCall(getBiDirectionalRequestMethod(), getCallOptions()), responseObserver);
+    }
   }
 
   /**
@@ -156,6 +315,20 @@ public final class RouteServiceGrpc {
     public route.Route request(route.Route request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getRequestMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public route.Route nominateRequest(route.Route request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getNominateRequestMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public route.Route voteRequest(route.Route request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getVoteRequestMethod(), getCallOptions(), request);
     }
   }
 
@@ -180,9 +353,28 @@ public final class RouteServiceGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getRequestMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<route.Route> nominateRequest(
+        route.Route request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getNominateRequestMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<route.Route> voteRequest(
+        route.Route request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getVoteRequestMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REQUEST = 0;
+  private static final int METHODID_NOMINATE_REQUEST = 1;
+  private static final int METHODID_VOTE_REQUEST = 2;
+  private static final int METHODID_BI_DIRECTIONAL_REQUEST = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -205,6 +397,14 @@ public final class RouteServiceGrpc {
           serviceImpl.request((route.Route) request,
               (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
           break;
+        case METHODID_NOMINATE_REQUEST:
+          serviceImpl.nominateRequest((route.Route) request,
+              (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
+          break;
+        case METHODID_VOTE_REQUEST:
+          serviceImpl.voteRequest((route.Route) request,
+              (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -215,6 +415,9 @@ public final class RouteServiceGrpc {
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
+        case METHODID_BI_DIRECTIONAL_REQUEST:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.biDirectionalRequest(
+              (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -267,6 +470,9 @@ public final class RouteServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new RouteServiceFileDescriptorSupplier())
               .addMethod(getRequestMethod())
+              .addMethod(getNominateRequestMethod())
+              .addMethod(getVoteRequestMethod())
+              .addMethod(getBiDirectionalRequestMethod())
               .build();
         }
       }

@@ -10,6 +10,8 @@ service RouteService {
 
   rpc nominateRequest(Route) returns (Route) {} //follower turn to candidate nominate request
   rpc voteRequest(Route) returns (Route) {} //vote request 
+
+  rpc biDirectionalRequest(stream Route) returns (stream Route) {}
   }
 
 // basic message correspondence between two points. Additional metadata 

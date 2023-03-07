@@ -20,45 +20,75 @@ public class Election extends Thread {
 	public void electionTimerTask() {
 
 		//
-		if (electionTask != null)
+		if (electionTask != null) {
 			electionTask.cancel();
+			System.out.println("cancelling election timer task");
+		}
 		electionTask = new TimerTask() {
+
+			int seconds = 15;
+			int i = 0;
+
 			@Override
 			public void run() {
-				// System.out.println("task is running so happy");
-				Engine engine = Engine.getInstance();
-				if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
 
-					engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // upgrade follower
-																									// to candidate
-					engine.serverTerm++; // increment term
+				i++;
+				if (i % seconds == 0) {
+					System.out.println("Timer action!");
 
-					// DEBUG PRINT
-					System.out.println(" ** " + "Term: " + engine.serverTerm + " || State: "
-							+ engine.serverStateMachine.state.toString() + " || votedFor: "
-							+ engine.serverStateMachine.votedFor + " || nominationVotes: "
-							+ engine.serverStateMachine.nominationVotes + " || Type: electionTimerTask()|| Origin: "
-							+ engine.getServerPort() + " || Destination: " + engine.getServerPort() + " || Path: "
-							+ "" + " || " + " || Reason: "
-							+ " election timer over, upgrading to candidate & term incremented to "
-							+ engine.serverTerm + " | ==> sending nominate requests " + " ** \n");
-					// DEBUG PRINT
+					// System.out.println("task is running so happy");
+					Engine engine = Engine.getInstance();
+					if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
 
-					engine.serverStateMachine.state.sendNominateRequest();
-					electionTimerTask(); // reset election timer for itself after becoming candidate
-				} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
-					// did not get back majority nominate requests, trying again as a candidate on
-					// same term
-					engine.serverStateMachine.state.sendNominateRequest(); // vote for me request
-				} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Leader) {
-					engine.serverStateMachine.state.sendLeaderHeartbeat();
+						engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // upgrade
+																										// follower
+																										// to candidate
+						engine.serverTerm++; // increment term
+
+						// DEBUG PRINT
+						// System.out.println(" ** " + "Term: " + engine.serverTerm + " || State: "
+						// + engine.serverStateMachine.state.toString() + " || votedFor: "
+						// + engine.serverStateMachine.votedFor + " || nominationVotes: "
+						// + engine.serverStateMachine.nominationVotes + " || Type:
+						// electionTimerTask()|| Origin: "
+						// + engine.getServerPort() + " || Destination: " + engine.getServerPort() + "
+						// || Path: "
+						// + "" + " || " + " || Reason: "
+						// + " election timer over, upgrading to candidate & term incremented to "
+						// + engine.serverTerm + " | ==> sending nominate requests " + " ** \n");
+						String str = " ** " + "Term: " + engine.serverTerm + " || State: "
+								+ engine.serverStateMachine.state.toString() + " || votedFor: "
+								+ engine.serverStateMachine.votedFor + " || nominationVotes: "
+								+ engine.serverStateMachine.nominationVotes + " || Type: electionTimerTask()|| Origin: "
+								+ engine.getServerPort() + " || Destination: " + engine.getServerPort() + " || Path: "
+								+ "" + " || " + " || Reason: "
+								+ " election timer over, upgrading to candidate & term incremented to "
+								+ engine.serverTerm + " | ==> sending nominate requests " + " ** \n";
+						engine.gui.setLabel(str);
+						// DEBUG PRINT
+
+						engine.serverStateMachine.state.sendNominateRequest();
+						//electionTimerTask(); // reset election timer for itself after becoming candidate
+					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
+						// did not get back majority nominate requests, trying again as a candidate on
+						// same term
+						engine.serverStateMachine.state.sendNominateRequest(); // vote for me request
+						electionTimerTask(); // reset election timer after sending out requests
+					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Leader) {
+						engine.serverStateMachine.state.sendLeaderHeartbeat();
+						System.out.println("sending leader heartbeat " + engine.getNextMessageID());
+					}
+
+				} else {
+					System.out.println("Time left:" + (seconds - (i % seconds)));
+					//Engine.getInstance().gui.setLabel(Integer.toString(seconds - (i % seconds)));
 				}
 
 			}
 		};
 		Timer timer = new Timer("Timer");
-		long delay = 10000L;
-		timer.scheduleAtFixedRate(electionTask, delay, delay);
+		// long delay = 20000L;
+		timer.schedule(electionTask, 0, 1000);
 		//
 	}
 

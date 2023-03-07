@@ -37,7 +37,7 @@ public class Engine {
 
 	protected Election election;
 
-
+	public GUI gui;
 
 	/* connectivity */
 	protected ArrayList<Link> links;
@@ -116,7 +116,11 @@ public class Engine {
 
 		serverName = conf.getProperty("server.name"); // set server name
 
+		// GUI
+		System.out.println("gui");
+		gui = new GUI();
 
+		//
 
 		Engine.logger.info("Starting Queues");
 		workQueue = new LinkedBlockingDeque<Work>();
@@ -177,7 +181,6 @@ public class Engine {
 	public String getServerName() {
 		return serverName;
 	}
-
 
 	public Long getServerID() {
 		return serverID;
