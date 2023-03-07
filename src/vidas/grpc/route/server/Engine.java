@@ -26,20 +26,23 @@ public class Engine {
 	protected Integer serverPort;
 	private Long nextMessageID;
 
-	protected String serverRole;
 	protected Long serverTerm;
 
 	/* workQueue/containers */
 	protected LinkedBlockingDeque<Work> workQueue, mgmtQueue;
 
 	/* worker threads */
-	protected ArrayList<Election> workers;
+	protected ArrayList<Worker> workers;
 	protected MgmtWorker manager;
 
-	protected int nominationVotes = 0;
+	protected Election election;
+
+
 
 	/* connectivity */
 	protected ArrayList<Link> links;
+
+	protected ServerStateMachine serverStateMachine;
 
 	public static Properties getConf() {
 		return conf;
@@ -63,8 +66,7 @@ public class Engine {
 	private Engine() {
 	}
 
-	private void createLink(String name, String id, String port)
-	{
+	private void createLink(String name, String id, String port) {
 		String serverConnectName = conf.getProperty(name);
 		Integer serverConnectID = Integer.parseInt(conf.getProperty(id));
 		String serverConnectIP = "127.0.0.1";
@@ -72,7 +74,7 @@ public class Engine {
 		Link link = new Link(serverConnectName, serverConnectID, serverConnectIP, serverConnectPort);
 		links.add(link);
 		logger.info("Adding server link | name: " + link.getServerName() + " | id: " + link.getServerID());
-		
+
 	}
 
 	private synchronized void init() {
@@ -82,8 +84,8 @@ public class Engine {
 		}
 
 		// if (manager != null) {
-		// 	Engine.logger.error("trying to re-init() logistics!");
-		// 	return;
+		// Engine.logger.error("trying to re-init() logistics!");
+		// return;
 		// }
 
 		// extract settings. Here we are using basic properties which, requires
@@ -106,30 +108,36 @@ public class Engine {
 
 		// our list of connections to other servers
 		links = new ArrayList<Link>();
-		//get the server connect link and add it to the arrayList
-		createLink("server.connect1.name","server.connect1.id","server.connect1.port");
-		//createLink("server.connect2.name","server.connect2.id","server.connect2.port");
+		// get the server connect link and add it to the arrayList
+		createLink("server.connect1.name", "server.connect1.id", "server.connect1.port");
+		// createLink("server.connect2.name","server.connect2.id","server.connect2.port");
 
 		// links
 
-		serverName = conf.getProperty("server.name"); //set server name
+		serverName = conf.getProperty("server.name"); // set server name
 
-		serverTerm = 0L; //terms starting at 0
-		serverRole = "follower"; //all servers start as followers
+
 
 		Engine.logger.info("Starting Queues");
 		workQueue = new LinkedBlockingDeque<Work>();
 		mgmtQueue = new LinkedBlockingDeque<Work>();
 
 		Engine.logger.info("Starting Workers");
-		workers = new ArrayList<Election>();
-		var w = new Election();
+		workers = new ArrayList<Worker>();
+		var w = new Worker();
 		workers.add(w);
 		w.start();
-		
+
 		Engine.logger.info("starting manager");
 		manager = new MgmtWorker();
 		manager.start();
+
+		Engine.logger.info("Starting Election");
+		election = new Election();
+		election.start();
+
+		serverStateMachine = new ServerStateMachine(); // server state machine
+		serverTerm = 0L;
 
 		Engine.logger.info("initializaton complete");
 	}
@@ -150,11 +158,11 @@ public class Engine {
 			w.shutdown();
 		}
 
-		//manager.shutdown();
+		// manager.shutdown();
 	}
 
 	public synchronized void increaseWorkers() {
-		var w = new Election();
+		var w = new Worker();
 		workers.add(0, w);
 		w.start();
 	}
@@ -170,9 +178,6 @@ public class Engine {
 		return serverName;
 	}
 
-	public String getServerRole() {
-		return serverRole;
-	}
 
 	public Long getServerID() {
 		return serverID;

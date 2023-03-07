@@ -59,37 +59,39 @@ public class MgmtWorker extends Thread {
 		forever = true;
 	}
 
-	private void startElections() {
-		Engine engine = Engine.getInstance();
-		if (engine.serverRole == "candidate") {
+	// private void startElections() {
+	// 	Engine engine = Engine.getInstance();
+	// 	if (engine.serverRole == "candidate") {
 
-		} else if (engine.serverRole == "follower") // follower
-		{
+	// 	} else if (engine.serverRole == "follower") // follower
+	// 	{
 
-			engine.serverRole = "candidate"; // becomes candidate role
-			engine.serverTerm++; // increment term by 1
+	// 		engine.serverRole = "candidate"; // becomes candidate role
+	// 		engine.serverTerm++; // increment term by 1
 
-			System.out
-					.println(
-							" ** electionTimer is over | elections are off | promoted to candidate | term gets incremented to "
-									+ engine.serverTerm);
+	// 		System.out
+	// 				.println(
+	// 						" ** electionTimer is over | elections are off | promoted to candidate | term gets incremented to "
+	// 								+ engine.serverTerm);
 
 			
 
-			// sending out nominate vote request to all other followers
-			for (Link l : engine.links) {
-				long referenceID = engine.getNextMessageID();
-				String path = "/nominate/" + engine.getServerName();
+	// 		// sending out nominate vote request to all other followers
+	// 		for (Link l : engine.links) {
+	// 			long referenceID = engine.getNextMessageID();
+	// 			String path = "/nominate/" + engine.getServerName();
 
-				Heartbeat.sendHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
-						ByteString.copyFromUtf8("heartbeat"));
+	// 			System.out.println(" ** sending heartbeat " + " to " + l.getServerID() + " | refID: " + referenceID
+	// 					+ " | path: " + path + " |");
 
-				System.out.println(" ** sending heartbeat " + " to " + l.getServerID() + " | refID: " + referenceID
-						+ " | path: " + path + " |");
-			}
+	// 			Heartbeat.sendHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
+	// 					ByteString.copyFromUtf8("heartbeat"));
 
-		}
-	}
+				
+	// 		}
+
+	// 	}
+	// }
 
 	private void doWork(Work w) {
 
@@ -98,7 +100,7 @@ public class MgmtWorker extends Thread {
 				try {
 
 					logger.info("*** election candidate is being run here ** manager is working() " + w + " ***");
-					startElections();
+					//startElections();
 					//electionTimerQueue.add(true);
 					// simulates latency
 					Thread.sleep(electionTimer);
