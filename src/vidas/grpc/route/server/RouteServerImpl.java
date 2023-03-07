@@ -122,48 +122,53 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			if (request.getPath().contains("/nominate")) {
 				if (Engine.getInstance().getServerRole() == "follower") {
 					Election worker = Engine.getInstance().workers.get(0);
-					System.out.println("* request path contains /nominate & this server is a follower therefore interrupting server worker & setting resetTimer to true | ");
+					System.out.println(
+							"* request path contains /nominate & this server is a follower therefore interrupting server worker & setting resetTimer to true | ");
 					worker.resetTimer = true;
 					worker.interrupt();
 				}
-				if (Engine.getInstance().getServerRole() == "candidate") { //got a nominate vote. TODO CHECK IF ACCECPT OR REJECT
+				if (Engine.getInstance().getServerRole() == "candidate") { // got a nominate vote. TODO CHECK IF ACCECPT
+																			// OR REJECT
 					{
 						Engine.getInstance().nominationVotes++;
-						//then if majority nomination votes proceed to become a leader
-						if(Engine.getInstance().nominationVotes >= 2)
-						{
-							Engine.getInstance().nominationVotes = 0; //reset nomination votes
-							Engine.getInstance().serverRole = "leader"; //become leader
-							System.out.println("this candidate server nominationVotes is >= 2 therefore this becomes a leader");
-							//might need to interrupt timer for leader role now
+						// then if majority nomination votes proceed to become a leader
+						if (Engine.getInstance().nominationVotes >= 2) {
+							Engine.getInstance().nominationVotes = 0; // reset nomination votes
+							Engine.getInstance().serverRole = "leader"; // become leader
+							System.out.println(
+									"this candidate server nominationVotes is >= 2 therefore this becomes a leader");
+							// might need to interrupt timer for leader role now
 						}
 					}
+				}
+				if (request.getPath().contains("/election")) {
+				}
+				Engine.getInstance().workQueue.add(w);
+				// Engine.getInstance().workQueue.add(w);
+				//
+
+				if (Engine.logger.isDebugEnabled())
+					Engine.logger.debug("request() qsize = " + Engine.getInstance().workQueue.size());
+
+				ack = route.Route.newBuilder();
+
+				// routing/header information
+				ack.setId(Engine.getInstance().getNextMessageID());
+				ack.setOrigin(Engine.getInstance().getServerID());
+				ack.setDestination(request.getOrigin());
+				ack.setPath(request.getPath());
+
+				// TODO ack of work
+				ack.setPayload(ack(request));
+
+			} else {
+				// TODO rejecting the request - what do we do?
+				// buildRejection(ack,request);
 			}
-			Engine.getInstance().workQueue.add(w);
-			// Engine.getInstance().workQueue.add(w);
-			//
 
-			if (Engine.logger.isDebugEnabled())
-				Engine.logger.debug("request() qsize = " + Engine.getInstance().workQueue.size());
-
-			ack = route.Route.newBuilder();
-
-			// routing/header information
-			ack.setId(Engine.getInstance().getNextMessageID());
-			ack.setOrigin(Engine.getInstance().getServerID());
-			ack.setDestination(request.getOrigin());
-			ack.setPath(request.getPath());
-
-			// TODO ack of work
-			ack.setPayload(ack(request));
-
-		} else {
-			// TODO rejecting the request - what do we do?
-			// buildRejection(ack,request);
+			route.Route rtn = ack.build();
+			responseObserver.onNext(rtn); //sends back response
+			responseObserver.onCompleted(); //closes the call
 		}
-
-		route.Route rtn = ack.build();
-		responseObserver.onNext(rtn);
-		responseObserver.onCompleted();
 	}
 }

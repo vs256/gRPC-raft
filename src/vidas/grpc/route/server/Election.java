@@ -81,7 +81,7 @@ public class Election extends Thread {
 					doElection(w);
 					// if(w == null) startNominations();
 				}
-				else { resetTimer = true;}
+				else { resetTimer = false;}
 
 			} catch (Exception e) {
 				logger.error("worker failure", e);

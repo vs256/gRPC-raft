@@ -5,9 +5,12 @@ package route;
 
 // a service interface (contract)
 
-service RouteService {
-   rpc request(Route) returns (Route) {}
-}
+service RouteService { 
+   rpc request(Route) returns (Route) {} //a simple RPC where client sends a request to server using stub & waits for a response to comeback, like a normal function call
+
+  rpc nominateRequest(Route) returns (Route) {} //follower turn to candidate nominate request
+  rpc voteRequest(Route) returns (Route) {} //vote request 
+  }
 
 // basic message correspondence between two points. Additional metadata 
 // and routing options can be added.
