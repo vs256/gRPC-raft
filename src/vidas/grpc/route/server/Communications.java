@@ -13,11 +13,7 @@ import route.Route;
 import route.RouteServiceGrpc;
 import vidas.grpc.route.server.Engine;
 
-public class Heartbeat {
-	// when using server.conf
-
-	// private static long clientID = 100;
-	// private static int port = 2100;
+public class Communications {
 
 	private static final Route constructMessage(long msgID, long toID, long origin, String path, ByteString payload) {
 		Route.Builder bld = Route.newBuilder();
@@ -33,7 +29,7 @@ public class Heartbeat {
 		return bld.build();
 	}
 
-	public static void sendNonBlockingHeartbeat(int serverPort, long referenceID, long destinationID, long origin,
+	public static void sendNonBlockingRequest(int serverPort, long referenceID, long destinationID, long origin,
 			String path,
 			ByteString payload) {
 

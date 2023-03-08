@@ -78,7 +78,7 @@ public class ServerStateMachine {
 						"sending nominate vote request");
 				// DEBUG PRINT
 
-				Heartbeat.sendNonBlockingHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
+				Communications.sendNonBlockingRequest(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
 						ByteString.copyFromUtf8("term: " + engine.serverTerm));
 
 			}
@@ -98,7 +98,7 @@ public class ServerStateMachine {
 						"sending leader heartbeat request");
 				// DEBUG PRINT
 
-				Heartbeat.sendNonBlockingHeartbeat(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
+				Communications.sendNonBlockingRequest(l.getPort(), referenceID, l.getServerID(), engine.serverID, path,
 						ByteString.copyFromUtf8("term: " + engine.serverTerm));
 
 			}
