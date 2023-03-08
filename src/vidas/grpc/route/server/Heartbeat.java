@@ -33,139 +33,12 @@ public class Heartbeat {
 		return bld.build();
 	}
 
-	// private static final void response(Route reply) {
-	// // TODO handle the reply/response from the server
-	// var payload = new String(reply.getPayload().toByteArray());
-	// Engine engine = Engine.getInstance();
-
-	// // DEBUG PRINT
-	// String str = " ** " + "Term: " + engine.serverTerm + " || State: "
-	// + engine.serverStateMachine.state.toString() + " || votedFor: "
-	// + engine.serverStateMachine.votedFor + " || nominationVotes: "
-	// + engine.serverStateMachine.nominationVotes + " || Type: Heartbeat response()
-	// || Origin: "
-	// + reply.getOrigin() + " || Destination: " + reply.getDestination() + " ||
-	// Path: "
-	// + reply.getPath() + " || " + " || Reason: Heartbeat response ack" + " ** \n";
-	// engine.gui.setLabel(str);
-	// // DEBUG PRINT
-	// if (reply.getPath().contains("accept")) {
-
-	// engine.serverStateMachine.nominationVotes++;
-
-	// // DEBUG PRINT
-	// str = " ** " + "Term: " + engine.serverTerm + " || State: "
-	// + engine.serverStateMachine.state.toString() + " || votedFor: "
-	// + engine.serverStateMachine.votedFor + " || nominationVotes: "
-	// + engine.serverStateMachine.nominationVotes + " || Type: Heartbeat response()
-	// || Origin: "
-	// + reply.getOrigin() + " || Destination: " + reply.getDestination() + " ||
-	// Path: "
-	// + reply.getPath() + " || " + " || Reason: "
-	// + "accept nominate request | incrementing nomination votes to "
-	// + engine.serverStateMachine.nominationVotes + " ** \n";
-	// engine.gui.setLabel(str);
-	// // DEBUG PRINT
-
-	// if (engine.serverStateMachine.nominationVotes >= 1) {
-
-	// // DEBUG PRINT
-	// str = " ** " + "Term: " + engine.serverTerm + " || State: "
-	// + engine.serverStateMachine.state.toString() + " || votedFor: "
-	// + engine.serverStateMachine.votedFor + " || nominationVotes: "
-	// + engine.serverStateMachine.nominationVotes + " || Type: Heartbeat response()
-	// || Origin: "
-	// + reply.getOrigin() + " || Destination: " + reply.getDestination() + " ||
-	// Path: "
-	// + reply.getPath() + " || " + " || Reason: majority nomination votes received
-	// | becoming leader "
-	// + " ** \n";
-	// engine.gui.setLabel(str);
-	// // DEBUG PRINT
-
-	// engine.serverStateMachine.state =
-	// engine.serverStateMachine.state.nextState(); // going from candidate
-	// // to leader
-
-	// //engine.election.electionTimerTask();
-
-	// }
-	// } else if (reply.getPath().contains("reject")) {
-	// // System.out.println("rejected nominate request");
-	// String replyServerTerm = reply.getPath().split("/")[2];
-
-	// if (engine.serverTerm < Long.parseLong(replyServerTerm)) {
-	// engine.serverTerm = Long.parseLong(replyServerTerm);
-	// engine.serverStateMachine.resetStateToOriginal();
-
-	// // DEBUG PRINT
-	// str = " ** " + "Term: " + engine.serverTerm + " || State: "
-	// + engine.serverStateMachine.state.toString() + " || votedFor: "
-	// + engine.serverStateMachine.votedFor + " || nominationVotes: "
-	// + engine.serverStateMachine.nominationVotes + " || Type: Heartbeat response()
-	// || Origin: "
-	// + reply.getOrigin() + " || Destination: " + reply.getDestination() + " ||
-	// Path: "
-	// + reply.getPath() + " || " + " || Reason: "
-	// + "serverTerm is less than reply server term, so setting this server term to
-	// = "
-	// + engine.serverTerm
-	// + " downgrading (if applicable) to follower | setting votedFor to none" + "
-	// ** \n";
-	// engine.gui.setLabel(str);
-	// // DEBUG PRINT
-
-	// //engine.election.electionTimerTask();
-
-	// }
-
-	// }
-
-	// if (reply.getPath().contains("heartbeat")) {
-
-	// }
-	// // Need to send a heartbeat
-	// }
-
-	// public static void sendHeartbeat(int serverPort, long referenceID, long
-	// destinationID, long origin, String path,
-	// ByteString payload) {
-
-	// ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost",
-	// serverPort).usePlaintext().build();
-	// RouteServiceGrpc.RouteServiceBlockingStub stub =
-	// RouteServiceGrpc.newBlockingStub(ch);
-	// // RouteServiceGrpc.RouteServiceStub stub = RouteServiceGrpc.newStub(ch);
-
-	// // simulate different type of messages that can be sent
-	// String sp = String.valueOf(Engine.getInstance().getServerID());
-	// // var path = (referenceID % 5 == 0) ? "/election/" + sp :
-	// // "/nomination/to-somewhere";
-	// var msg = constructMessage(referenceID, destinationID, origin, path,
-	// payload);
-
-	// // blocking!
-	// // StreamObserver<route.Route> responseObserver = new
-	// // StreamObserver<route.Route>();
-	// // StreamObserver<route.Route> requestObserver =
-	// // stub.biDirectionalRequest(responseObserver);
-	// var r = stub.request(msg);
-	// response(r);
-
-	// ch.shutdown();
-	// }
-
 	public static void sendNonBlockingHeartbeat(int serverPort, long referenceID, long destinationID, long origin,
 			String path,
 			ByteString payload) {
 
 		ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", serverPort).usePlaintext().build();
 		RouteServiceGrpc.RouteServiceStub stub = RouteServiceGrpc.newStub(ch);
-
-		// simulate different type of messages that can be sent
-		String sp = String.valueOf(Engine.getInstance().getServerID());
-		// var path = (referenceID % 5 == 0) ? "/election/" + sp :
-		// "/nomination/to-somewhere";
 
 		final CountDownLatch finishLatch = new CountDownLatch(1);
 		StreamObserver<route.Route> requestObserver = stub.biDirectionalRequest(new StreamObserver<route.Route>() {
@@ -175,52 +48,36 @@ public class Heartbeat {
 				// response(note);
 				System.out.println("Got path: " + response.getPath());
 				Engine engine = Engine.getInstance();
-				
-					if (response.getPath().contains("/reject")) {
 
-					} else if (response.getPath().contains("/accept")
-							&& (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate)) {
+				if (response.getPath().contains("/reject")) {
 
-						engine.serverStateMachine.nominationVotes++;
+				} else if (response.getPath().contains("/accept")
+						&& (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate)) {
+
+					engine.serverStateMachine.nominationVotes++;
+
+					// DEBUG PRINT
+					engine.debugHelper.debugPrint(response, "Heartbeat response()",
+							"accept nominate request | incrementing nomination votes to "
+									+ engine.serverStateMachine.nominationVotes);
+					// DEBUG PRINT
+
+					int majorityServerCount = Math.floorDiv(engine.links.size(), 2) + 1; // at least 50% + 1
+					if (engine.serverStateMachine.nominationVotes >= majorityServerCount) {
 
 						// DEBUG PRINT
-						String str = " ** " + "Term: " + engine.serverTerm + " || State: "
-								+ engine.serverStateMachine.state.toString() + " || votedFor: "
-								+ engine.serverStateMachine.votedFor + " || nominationVotes: "
-								+ engine.serverStateMachine.nominationVotes
-								+ " || Type: Heartbeat response() || Origin: "
-								+ response.getOrigin() + " || Destination: " + response.getDestination() + " || Path: "
-								+ response.getPath() + " || " + " || Reason: "
-								+ "accept nominate request | incrementing nomination votes to "
-								+ engine.serverStateMachine.nominationVotes + " ** \n";
-						engine.gui.setLabel(str);
+						engine.debugHelper.debugPrint(response, "Heartbeat response()",
+								" majority nomination votes received | becoming leader ");
 						// DEBUG PRINT
 
-						if (engine.serverStateMachine.nominationVotes >= 2) {
+						engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // going from
+																										// candidate
+																										// to leader
 
-							// DEBUG PRINT
-							str = " ** " + "Term: " + engine.serverTerm + " || State: "
-									+ engine.serverStateMachine.state.toString() + " || votedFor: "
-									+ engine.serverStateMachine.votedFor + " || nominationVotes: "
-									+ engine.serverStateMachine.nominationVotes
-									+ " || Type: Heartbeat response() || Origin: "
-									+ response.getOrigin() + " || Destination: " + response.getDestination()
-									+ " || Path: "
-									+ response.getPath() + " || "
-									+ " || Reason: majority nomination votes received | becoming leader "
-									+ " ** \n";
-							engine.gui.setLabel(str);
-							// DEBUG PRINT
+						engine.election.electionTimerTask(0); // resetting timer after becomes leader
 
-							engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // going from
-																											// candidate
-																											// to leader
-
-							engine.election.electionTimerTask(0);
-
-						}
 					}
-				
+				}
 
 			}
 
@@ -270,5 +127,4 @@ public class Heartbeat {
 			e.printStackTrace();
 		}
 	}
-
 }

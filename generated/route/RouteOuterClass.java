@@ -30,13 +30,11 @@ public final class RouteOuterClass {
     java.lang.String[] descriptorData = {
       "\n\013route.proto\022\005route\"W\n\005Route\022\n\n\002id\030\001 \001(" +
       "\003\022\016\n\006origin\030\002 \001(\003\022\023\n\013destination\030\003 \001(\003\022\014" +
-      "\n\004path\030\004 \001(\t\022\017\n\007payload\030\005 \001(\0142\317\001\n\014RouteS" +
-      "ervice\022\'\n\007request\022\014.route.Route\032\014.route." +
-      "Route\"\000\022/\n\017nominateRequest\022\014.route.Route" +
-      "\032\014.route.Route\"\000\022+\n\013voteRequest\022\014.route." +
-      "Route\032\014.route.Route\"\000\0228\n\024biDirectionalRe" +
-      "quest\022\014.route.Route\032\014.route.Route\"\000(\0010\001B" +
-      "\004H\001P\001b\006proto3"
+      "\n\004path\030\004 \001(\t\022\017\n\007payload\030\005 \001(\0142\177\n\014RouteSe" +
+      "rvice\0225\n\025blockingServerRequest\022\014.route.R" +
+      "oute\032\014.route.Route\"\000\0228\n\024biDirectionalReq" +
+      "uest\022\014.route.Route\032\014.route.Route\"\000(\0010\001B\004" +
+      "H\001P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

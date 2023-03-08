@@ -16,96 +16,34 @@ public final class RouteServiceGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<route.Route,
-      route.Route> getRequestMethod;
+      route.Route> getBlockingServerRequestMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "request",
+      fullMethodName = SERVICE_NAME + '/' + "blockingServerRequest",
       requestType = route.Route.class,
       responseType = route.Route.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<route.Route,
-      route.Route> getRequestMethod() {
-    io.grpc.MethodDescriptor<route.Route, route.Route> getRequestMethod;
-    if ((getRequestMethod = RouteServiceGrpc.getRequestMethod) == null) {
+      route.Route> getBlockingServerRequestMethod() {
+    io.grpc.MethodDescriptor<route.Route, route.Route> getBlockingServerRequestMethod;
+    if ((getBlockingServerRequestMethod = RouteServiceGrpc.getBlockingServerRequestMethod) == null) {
       synchronized (RouteServiceGrpc.class) {
-        if ((getRequestMethod = RouteServiceGrpc.getRequestMethod) == null) {
-          RouteServiceGrpc.getRequestMethod = getRequestMethod =
+        if ((getBlockingServerRequestMethod = RouteServiceGrpc.getBlockingServerRequestMethod) == null) {
+          RouteServiceGrpc.getBlockingServerRequestMethod = getBlockingServerRequestMethod =
               io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "request"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "blockingServerRequest"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   route.Route.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   route.Route.getDefaultInstance()))
-              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("request"))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("blockingServerRequest"))
               .build();
         }
       }
     }
-    return getRequestMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<route.Route,
-      route.Route> getNominateRequestMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "nominateRequest",
-      requestType = route.Route.class,
-      responseType = route.Route.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<route.Route,
-      route.Route> getNominateRequestMethod() {
-    io.grpc.MethodDescriptor<route.Route, route.Route> getNominateRequestMethod;
-    if ((getNominateRequestMethod = RouteServiceGrpc.getNominateRequestMethod) == null) {
-      synchronized (RouteServiceGrpc.class) {
-        if ((getNominateRequestMethod = RouteServiceGrpc.getNominateRequestMethod) == null) {
-          RouteServiceGrpc.getNominateRequestMethod = getNominateRequestMethod =
-              io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "nominateRequest"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  route.Route.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  route.Route.getDefaultInstance()))
-              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("nominateRequest"))
-              .build();
-        }
-      }
-    }
-    return getNominateRequestMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<route.Route,
-      route.Route> getVoteRequestMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "voteRequest",
-      requestType = route.Route.class,
-      responseType = route.Route.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<route.Route,
-      route.Route> getVoteRequestMethod() {
-    io.grpc.MethodDescriptor<route.Route, route.Route> getVoteRequestMethod;
-    if ((getVoteRequestMethod = RouteServiceGrpc.getVoteRequestMethod) == null) {
-      synchronized (RouteServiceGrpc.class) {
-        if ((getVoteRequestMethod = RouteServiceGrpc.getVoteRequestMethod) == null) {
-          RouteServiceGrpc.getVoteRequestMethod = getVoteRequestMethod =
-              io.grpc.MethodDescriptor.<route.Route, route.Route>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "voteRequest"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  route.Route.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  route.Route.getDefaultInstance()))
-              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("voteRequest"))
-              .build();
-        }
-      }
-    }
-    return getVoteRequestMethod;
+    return getBlockingServerRequestMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<route.Route,
@@ -189,23 +127,9 @@ public final class RouteServiceGrpc {
 
     /**
      */
-    public void request(route.Route request,
+    public void blockingServerRequest(route.Route request,
         io.grpc.stub.StreamObserver<route.Route> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getRequestMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void nominateRequest(route.Route request,
-        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getNominateRequestMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void voteRequest(route.Route request,
-        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getVoteRequestMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBlockingServerRequestMethod(), responseObserver);
     }
 
     /**
@@ -218,26 +142,12 @@ public final class RouteServiceGrpc {
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            getRequestMethod(),
+            getBlockingServerRequestMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 route.Route,
                 route.Route>(
-                  this, METHODID_REQUEST)))
-          .addMethod(
-            getNominateRequestMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                route.Route,
-                route.Route>(
-                  this, METHODID_NOMINATE_REQUEST)))
-          .addMethod(
-            getVoteRequestMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                route.Route,
-                route.Route>(
-                  this, METHODID_VOTE_REQUEST)))
+                  this, METHODID_BLOCKING_SERVER_REQUEST)))
           .addMethod(
             getBiDirectionalRequestMethod(),
             io.grpc.stub.ServerCalls.asyncBidiStreamingCall(
@@ -265,26 +175,10 @@ public final class RouteServiceGrpc {
 
     /**
      */
-    public void request(route.Route request,
+    public void blockingServerRequest(route.Route request,
         io.grpc.stub.StreamObserver<route.Route> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getRequestMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void nominateRequest(route.Route request,
-        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getNominateRequestMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void voteRequest(route.Route request,
-        io.grpc.stub.StreamObserver<route.Route> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getVoteRequestMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getBlockingServerRequestMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -312,23 +206,9 @@ public final class RouteServiceGrpc {
 
     /**
      */
-    public route.Route request(route.Route request) {
+    public route.Route blockingServerRequest(route.Route request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getRequestMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public route.Route nominateRequest(route.Route request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getNominateRequestMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public route.Route voteRequest(route.Route request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getVoteRequestMethod(), getCallOptions(), request);
+          getChannel(), getBlockingServerRequestMethod(), getCallOptions(), request);
     }
   }
 
@@ -348,33 +228,15 @@ public final class RouteServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<route.Route> request(
+    public com.google.common.util.concurrent.ListenableFuture<route.Route> blockingServerRequest(
         route.Route request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getRequestMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<route.Route> nominateRequest(
-        route.Route request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getNominateRequestMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<route.Route> voteRequest(
-        route.Route request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getVoteRequestMethod(), getCallOptions()), request);
+          getChannel().newCall(getBlockingServerRequestMethod(), getCallOptions()), request);
     }
   }
 
-  private static final int METHODID_REQUEST = 0;
-  private static final int METHODID_NOMINATE_REQUEST = 1;
-  private static final int METHODID_VOTE_REQUEST = 2;
-  private static final int METHODID_BI_DIRECTIONAL_REQUEST = 3;
+  private static final int METHODID_BLOCKING_SERVER_REQUEST = 0;
+  private static final int METHODID_BI_DIRECTIONAL_REQUEST = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -393,16 +255,8 @@ public final class RouteServiceGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_REQUEST:
-          serviceImpl.request((route.Route) request,
-              (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
-          break;
-        case METHODID_NOMINATE_REQUEST:
-          serviceImpl.nominateRequest((route.Route) request,
-              (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
-          break;
-        case METHODID_VOTE_REQUEST:
-          serviceImpl.voteRequest((route.Route) request,
+        case METHODID_BLOCKING_SERVER_REQUEST:
+          serviceImpl.blockingServerRequest((route.Route) request,
               (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
           break;
         default:
@@ -469,9 +323,7 @@ public final class RouteServiceGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new RouteServiceFileDescriptorSupplier())
-              .addMethod(getRequestMethod())
-              .addMethod(getNominateRequestMethod())
-              .addMethod(getVoteRequestMethod())
+              .addMethod(getBlockingServerRequestMethod())
               .addMethod(getBiDirectionalRequestMethod())
               .build();
         }

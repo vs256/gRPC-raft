@@ -33,14 +33,14 @@ public class Engine {
 
 	/* worker threads */
 	protected ArrayList<Worker> workers;
-	protected MgmtWorker manager;
 
 	protected Election election;
 
-	public GUI gui;
+	public DebugHelper debugHelper;
 
 	/* connectivity */
 	protected ArrayList<Link> links;
+
 
 	protected ServerStateMachine serverStateMachine;
 
@@ -98,10 +98,6 @@ public class Engine {
 		// our list of connections to other servers
 		links = new ArrayList<Link>();
 		// get the server connect link and add it to the arrayList
-		// createLink("server.connect1.name", "server.connect1.id",
-		// "server.connect1.port");
-		// createLink("server.connect2.name","server.connect2.id","server.connect2.port");
-
 		String[] serverConnectionsPorts = conf.getProperty("server.connections.ports").split(",");
 		String[] serverConnectionsNames = conf.getProperty("server.connections.names").split(",");
 		String[] serverConnectionsIDs = conf.getProperty("server.connections.ids").split(",");
@@ -121,7 +117,7 @@ public class Engine {
 
 		Engine.logger.info("Starting Queues");
 		workQueue = new LinkedBlockingDeque<Work>();
-		mgmtQueue = new LinkedBlockingDeque<Work>();
+		//mgmtQueue = new LinkedBlockingDeque<Work>();
 
 		Engine.logger.info("Starting Workers");
 		workers = new ArrayList<Worker>();
@@ -129,9 +125,6 @@ public class Engine {
 		workers.add(w);
 		w.start();
 
-		Engine.logger.info("starting manager");
-		manager = new MgmtWorker();
-		manager.start();
 
 		Engine.logger.info("Starting Election");
 		election = new Election();
@@ -140,10 +133,8 @@ public class Engine {
 		serverStateMachine = new ServerStateMachine(); // server state machine
 		serverTerm = 0L;
 
-		// GUI
-		System.out.println("gui");
-		int offset = (int) (long) (serverID / 1000);
-		gui = new GUI(0, (300 * offset));
+		// DebugHelper
+		debugHelper = new DebugHelper(this);
 		//
 
 		Engine.logger.info("initializaton complete");

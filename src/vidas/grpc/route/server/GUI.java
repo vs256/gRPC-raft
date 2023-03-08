@@ -78,7 +78,7 @@ public class GUI implements ActionListener {
         for (int i = 0; i < stringArray.length; i++) {
             labelString = labelString + stringArray[i] + "<br>";
         }
-        labelString += timer + "</html>";
+        labelString += "</html>";
         label.setText(labelString);
     }
 
@@ -90,8 +90,4 @@ public class GUI implements ActionListener {
 
     }
 
-    // create one Frame
-    // public static void main(String[] args) {
-    // new GUI();
-    // }
 }

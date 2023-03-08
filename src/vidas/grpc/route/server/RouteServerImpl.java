@@ -109,11 +109,102 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		return true;
 	}
 
+	@Override
+	public StreamObserver<route.Route> biDirectionalRequest(final StreamObserver<route.Route> responseObserver) {
+		return new StreamObserver<route.Route>() {
+			@Override
+			public void onNext(route.Route request) {
+
+				// ack work
+				route.Route.Builder ack = null;
+				if (verify(request)) {
+
+					// delay work
+					var w = new Work(request, responseObserver);
+					Engine.getInstance().workQueue.add(w);
+
+					if (Engine.logger.isDebugEnabled())
+						Engine.logger.debug("request() qsize = " + Engine.getInstance().workQueue.size());
+
+					ack = route.Route.newBuilder();
+
+					// routing/header information
+					ack.setId(Engine.getInstance().getNextMessageID());
+					ack.setOrigin(Engine.getInstance().getServerID());
+					ack.setDestination(request.getOrigin());
+
+					Engine engine = Engine.getInstance();
+					String serverWhoIsAskingForVote = request.getPath().split("/")[3];
+					if (request.getPath().contains("/nominate")) {
+
+						if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
+
+							// String requestServerTerm = request.getPath().split("/")[2];
+							if (engine.serverStateMachine.votedFor == "") {
+								ack.setPath(request.getPath() + "/accept");
+								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+
+								engine.election.electionTimerTask(4000L);
+
+							} else {
+								ack.setPath(request.getPath() + "/reject");
+							}
+						} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
+							if (engine.serverStateMachine.votedFor == "") {
+								ack.setPath(request.getPath() + "/accept");
+								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+
+								engine.election.electionTimerTask(4000L);
+
+							} else {
+								ack.setPath(request.getPath() + "/reject");
+							}
+						}
+					} else if (request.getPath().contains("/heartbeat")) {
+						ack.setPath(request.getPath() + "/success");
+
+						if (engine.serverStateMachine.state != ServerStateMachine.ServerState.Leader) {
+							engine.serverTerm = Long.parseLong(request.getPath().split("/")[2]); // make sure server
+																									// term is same as
+																									// leader just in
+																									// case
+							engine.election.electionTimerTask(4000L);
+						}
+					}
+
+					// TODO ack of work
+					ack.setPayload(ack(request));
+				} else {
+					// TODO rejecting the request - what do we do?
+					// buildRejection(ack,request);
+				}
+
+				route.Route rtn = ack.build();
+				responseObserver.onNext(rtn); // sends back response
+
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				// logger.log(Level.WARNING, "Encountered error in routeChat", t);
+			}
+
+			@Override
+			public void onCompleted() {
+				responseObserver.onCompleted();
+			}
+		};
+	}
+
+
+	
+
+	
 	/**
 	 * server received a message!
 	 */
 	@Override
-	public void request(route.Route request, StreamObserver<route.Route> responseObserver) {
+	public void blockingServerRequest(route.Route request, StreamObserver<route.Route> responseObserver) {
 
 		// TODO refactor to use RouteServer to isolate implementation from
 		// transportation
@@ -125,36 +216,6 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			// delay work
 			var w = new Work(request, responseObserver);
 
-			// if (MgmtWorker.isPriority(request))
-			// Engine.getInstance().mgmtQueue.add(w);
-			// else
-			// if (request.getPath().contains("/nominate")) {
-			// if (Engine.getInstance().getServerRole() == "follower") {
-			// Election worker = Engine.getInstance().workers.get(0);
-			// System.out.println(
-			// "* request path contains /nominate & this server is a follower therefore
-			// interrupting server worker & setting resetTimer to true | ");
-			// worker.resetTimer = true;
-			// worker.interrupt();
-			// }
-			// if (Engine.getInstance().getServerRole() == "candidate") { // got a nominate
-			// vote. TODO CHECK IF ACCECPT
-			// // OR REJECT
-			// {
-			// Engine.getInstance().nominationVotes++;
-			// // then if majority nomination votes proceed to become a leader
-			// if (Engine.getInstance().nominationVotes >= 2) {
-			// Engine.getInstance().nominationVotes = 0; // reset nomination votes
-			// Engine.getInstance().serverRole = "leader"; // become leader
-			// System.out.println(
-			// "this candidate server nominationVotes is >= 2 therefore this becomes a
-			// leader");
-			// // might need to interrupt timer for leader role now
-			// }
-			// }
-			// }
-			// if (request.getPath().contains("/election")) {
-			// }
 			Engine.getInstance().workQueue.add(w);
 
 			if (Engine.logger.isDebugEnabled())
@@ -200,138 +261,4 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		responseObserver.onCompleted(); // closes the call
 
 	}
-
-	@Override
-	public StreamObserver<route.Route> biDirectionalRequest(final StreamObserver<route.Route> responseObserver) {
-		return new StreamObserver<route.Route>() {
-			@Override
-			public void onNext(route.Route request) {
-				// request(note, responseObserver);
-				// List<route.Route> notes = getOrCreateNotes(request);
-
-				// // Respond with all previous notes at this location.
-				// for (route.Route prevNote : notes.toArray(new route.Route[0])) {
-				// responseObserver.onNext(prevNote);
-				// }
-
-				// // Now add the new note to the list
-				// notes.add(request);
-
-				// ack work
-				route.Route.Builder ack = null;
-				if (true) {
-
-					// delay work
-					var w = new Work(request, responseObserver);
-
-					// if (MgmtWorker.isPriority(request))
-					// Engine.getInstance().mgmtQueue.add(w);
-					// else
-					// if (request.getPath().contains("/nominate")) {
-					// if (Engine.getInstance().getServerRole() == "follower") {
-					// Election worker = Engine.getInstance().workers.get(0);
-					// System.out.println(
-					// "* request path contains /nominate & this server is a follower therefore
-					// interrupting server worker & setting resetTimer to true | ");
-					// worker.resetTimer = true;
-					// worker.interrupt();
-					// }
-					// if (Engine.getInstance().getServerRole() == "candidate") { // got a nominate
-					// vote. TODO CHECK IF ACCECPT
-					// // OR REJECT
-					// {
-					// Engine.getInstance().nominationVotes++;
-					// // then if majority nomination votes proceed to become a leader
-					// if (Engine.getInstance().nominationVotes >= 2) {
-					// Engine.getInstance().nominationVotes = 0; // reset nomination votes
-					// Engine.getInstance().serverRole = "leader"; // become leader
-					// System.out.println(
-					// "this candidate server nominationVotes is >= 2 therefore this becomes a
-					// leader");
-					// // might need to interrupt timer for leader role now
-					// }
-					// }
-					// }
-					// if (request.getPath().contains("/election")) {
-					// }
-					Engine.getInstance().workQueue.add(w);
-
-					if (Engine.logger.isDebugEnabled())
-						Engine.logger.debug("request() qsize = " + Engine.getInstance().workQueue.size());
-
-					ack = route.Route.newBuilder();
-
-					// routing/header information
-					ack.setId(Engine.getInstance().getNextMessageID());
-					ack.setOrigin(Engine.getInstance().getServerID());
-					ack.setDestination(request.getOrigin());
-
-					Engine engine = Engine.getInstance();
-					String serverWhoIsAskingForVote = request.getPath().split("/")[3];
-					if (request.getPath().contains("/nominate")) {
-
-						if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
-
-							// String requestServerTerm = request.getPath().split("/")[2];
-							if (engine.serverStateMachine.votedFor == "") {
-								ack.setPath(request.getPath() + "/accept");
-								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-
-								engine.election.electionTimerTask(4000L);
-
-							} else {
-								ack.setPath(request.getPath() + "/reject");
-							}
-						} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
-							if (engine.serverStateMachine.votedFor == "") {
-								ack.setPath(request.getPath() + "/accept");
-								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-
-								engine.election.electionTimerTask(4000L);
-
-							} else {
-								ack.setPath(request.getPath() + "/reject");
-							}
-						}
-					} else if (request.getPath().contains("/heartbeat")) {
-						ack.setPath(request.getPath() + "/success");
-
-						if (engine.serverStateMachine.state != ServerStateMachine.ServerState.Leader) {
-							engine.election.electionTimerTask(4000L);
-						}
-					}
-
-					// TODO ack of work
-					ack.setPayload(ack(request));
-				} else {
-					// TODO rejecting the request - what do we do?
-					// buildRejection(ack,request);
-				}
-
-				route.Route rtn = ack.build();
-				responseObserver.onNext(rtn); // sends back response
-
-			}
-
-			@Override
-			public void onError(Throwable t) {
-				// logger.log(Level.WARNING, "Encountered error in routeChat", t);
-			}
-
-			@Override
-			public void onCompleted() {
-				responseObserver.onCompleted();
-			}
-		};
-	}
-
-	/**
-	 * Get the notes list for the given location. If missing, create it.
-	 */
-	private List<route.Route> getOrCreateNotes(route.Route route) {
-		List<route.Route> notes = Collections.synchronizedList(new ArrayList<route.Route>());
-		List<route.Route> prevNotes = routes.putIfAbsent(route, notes);
-		return prevNotes != null ? prevNotes : notes;
-	}
-
 }

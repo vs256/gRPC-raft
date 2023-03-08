@@ -39,17 +39,17 @@ public class RouteClient {
 		RouteServiceGrpc.RouteServiceBlockingStub stub = RouteServiceGrpc.newBlockingStub(ch);
 
 		final int destID = 1000; // 1234;
-		final int I = 1;
+		final int I = 5;
 		for (int i = 0; i < I; i++) {
 
 			// simulate different type of messages that can be sent
 			// var path = (i % 5 == 0) ? "/election/manage-something" :
 			// "/nominate/to-somewhere";
-			String path = "/election";
+			String path = "/client";
 			var msg = RouteClient.constructMessage(i, destID, path, "hello " + i);
 
 			// blocking!
-			var r = stub.request(msg);
+			var r = stub.blockingServerRequest(msg);
 			response(r);
 
 		}
