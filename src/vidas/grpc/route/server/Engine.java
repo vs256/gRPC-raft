@@ -66,17 +66,6 @@ public class Engine {
 	private Engine() {
 	}
 
-	private void createLink(String name, String id, String port) {
-		String serverConnectName = conf.getProperty(name);
-		Integer serverConnectID = Integer.parseInt(conf.getProperty(id));
-		String serverConnectIP = "127.0.0.1";
-		Integer serverConnectPort = Integer.parseInt(conf.getProperty(port));
-		Link link = new Link(serverConnectName, serverConnectID, serverConnectIP, serverConnectPort);
-		links.add(link);
-		logger.info("Adding server link | name: " + link.getServerName() + " | id: " + link.getServerID());
-
-	}
-
 	private synchronized void init() {
 		if (conf == null) {
 			Engine.logger.error("server is not configured!");
@@ -109,18 +98,26 @@ public class Engine {
 		// our list of connections to other servers
 		links = new ArrayList<Link>();
 		// get the server connect link and add it to the arrayList
-		createLink("server.connect1.name", "server.connect1.id", "server.connect1.port");
+		// createLink("server.connect1.name", "server.connect1.id",
+		// "server.connect1.port");
 		// createLink("server.connect2.name","server.connect2.id","server.connect2.port");
 
+		String[] serverConnectionsPorts = conf.getProperty("server.connections.ports").split(",");
+		String[] serverConnectionsNames = conf.getProperty("server.connections.names").split(",");
+		String[] serverConnectionsIDs = conf.getProperty("server.connections.ids").split(",");
+		for (int i = 0; i < serverConnectionsPorts.length; i++) {
+			String serverConnectName = serverConnectionsNames[i];
+			Integer serverConnectID = Integer.parseInt(serverConnectionsIDs[i]);
+			String serverConnectIP = "127.0.0.1";
+			Integer serverConnectPort = Integer.parseInt(serverConnectionsPorts[i]);
+			Link link = new Link(serverConnectName, serverConnectID, serverConnectIP, serverConnectPort);
+			links.add(link);
+			logger.info("Adding server link | name: " + link.getServerName() + " | id: " + link.getServerID());
+
+		}
 		// links
 
 		serverName = conf.getProperty("server.name"); // set server name
-
-		// GUI
-		System.out.println("gui");
-		gui = new GUI();
-
-		//
 
 		Engine.logger.info("Starting Queues");
 		workQueue = new LinkedBlockingDeque<Work>();
@@ -142,6 +139,12 @@ public class Engine {
 
 		serverStateMachine = new ServerStateMachine(); // server state machine
 		serverTerm = 0L;
+
+		// GUI
+		System.out.println("gui");
+		int offset = (int) (long) (serverID / 1000);
+		gui = new GUI(0, (300 * offset));
+		//
 
 		Engine.logger.info("initializaton complete");
 	}

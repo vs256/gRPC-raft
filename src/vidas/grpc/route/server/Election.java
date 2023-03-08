@@ -14,7 +14,10 @@ public class Election extends Thread {
 	private TimerTask electionTask;
 
 	public Election() {
-		electionTimerTask(0);
+		long leftLimit = 0L;
+		long rightLimit = 10L;
+		long generatedLong = leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+		electionTimerTask(generatedLong * 1000L);
 	}
 
 	public void electionTimerTask(long delay) {
@@ -44,6 +47,7 @@ public class Election extends Thread {
 						engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // upgrade
 																										// follower
 																										// to candidate
+
 						engine.serverTerm++; // increment term
 
 						// DEBUG PRINT
@@ -68,13 +72,17 @@ public class Election extends Thread {
 						engine.gui.setLabel(str);
 						// DEBUG PRINT
 
+						engine.serverStateMachine.votedFor = "";
 						engine.serverStateMachine.state.sendNominateRequest();
-						
+
 					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
-						// did not get back majority nominate requests, trying again as a candidate on
-						// same term
+						// did not get back majority nominate requests, trying again as a candidate
+						// after increment
+
+						engine.serverTerm++;
+						engine.serverStateMachine.votedFor = "";
 						engine.serverStateMachine.state.sendNominateRequest(); // vote for me request
-						//electionTimerTask(); // reset election timer after sending out requests
+						// electionTimerTask(); // reset election timer after sending out requests
 					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Leader) {
 						engine.serverStateMachine.state.sendLeaderHeartbeat();
 						System.out.println("sending leader heartbeat " + engine.getNextMessageID());
@@ -82,7 +90,7 @@ public class Election extends Thread {
 
 				} else {
 					System.out.println("Time left:" + (seconds - (i % seconds)));
-					//Engine.getInstance().gui.setLabel(Integer.toString(seconds - (i % seconds)));
+					Engine.getInstance().gui.setTimer(Integer.toString(seconds - (i % seconds)));
 				}
 
 			}

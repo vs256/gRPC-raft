@@ -7,11 +7,13 @@ import java.awt.event.*;
 public class GUI implements ActionListener {
     private int clicks = 0;
     private JLabel label = new JLabel("Number of clicks:  0     ");
+    private JLabel timerLabel = new JLabel("timer:  0     ");
+
     private JFrame frame = new JFrame();
 
     public String timer;
 
-    public GUI() {
+    public GUI(int offsetLocationX, int offsetLocationY) {
 
         // // the clickable button
         // JButton button = new JButton("Click Me");
@@ -33,16 +35,32 @@ public class GUI implements ActionListener {
 
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(new Dimension(600, 700));
-        //frame.setLocation(new Point(600, 800));
-        frame.setLayout(new BorderLayout());
+        frame.setSize(new Dimension(650, 400));
+        frame.setLocation(new Point(400 + offsetLocationX, -300 + offsetLocationY));
+        frame.setLayout(new FlowLayout());
 
-        label = new JLabel("<html>Question:<br>What is love?<br>Baby don't hurt me<br>Don't hurt me<br>No more</html>");
+        Engine engine = Engine.getInstance();
+        String str = " Server: "+engine.getServerName()+" ** " + "<br>Term: " + engine.serverTerm + " <br> State: "
+									+ engine.serverStateMachine.state.toString() + " <br> votedFor: "
+									+ engine.serverStateMachine.votedFor + " <br> nominationVotes: "
+									+ engine.serverStateMachine.nominationVotes
+									+ " <br> Type: initializing <br> Origin: "
+									+ " " + " <br> Destination: " + " "
+									+ " <br> Path: "
+									+ " " + " <br> "
+									+ " <br> Reason: initializing server "
+									+ " ** \n";
+
+        label = new JLabel("<html>"+str+"</html>");
         label.setFont(new Font("Serif", Font.BOLD, 15));
         label.setHorizontalAlignment(JLabel.CENTER);
 
+        timerLabel = new JLabel("<html><br>Timer: 0<br></html>");
+        timerLabel.setFont(new Font("Serif", Font.BOLD, 15));
+        timerLabel.setHorizontalAlignment(JLabel.CENTER);
 
         frame.add(label);
+        frame.add(timerLabel);
 
         frame.setVisible(true);
     }
@@ -66,8 +84,9 @@ public class GUI implements ActionListener {
 
     public void setTimer(String str)
     {
-        timer = "Timer: " + str;
-        setLabel(label.getText());
+        String labelString = "<html>Election Timer: ";
+        labelString += str + "</html>";
+        timerLabel.setText(labelString);
 
     }
 

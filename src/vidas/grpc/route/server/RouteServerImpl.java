@@ -168,6 +168,7 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			ack.setDestination(request.getOrigin());
 
 			Engine engine = Engine.getInstance();
+			
 			if (request.getPath().contains("/nominate")) {
 
 				String serverWhoIsAskingForVote = request.getPath().split("/")[3];
@@ -205,7 +206,7 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		return new StreamObserver<route.Route>() {
 			@Override
 			public void onNext(route.Route request) {
-				//request(note, responseObserver);
+				// request(note, responseObserver);
 				// List<route.Route> notes = getOrCreateNotes(request);
 
 				// // Respond with all previous notes at this location.
@@ -266,32 +267,38 @@ public class RouteServerImpl extends RouteServiceImplBase {
 					ack.setDestination(request.getOrigin());
 
 					Engine engine = Engine.getInstance();
+					String serverWhoIsAskingForVote = request.getPath().split("/")[3];
 					if (request.getPath().contains("/nominate")) {
 
 						if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
-							String serverWhoIsAskingForVote = request.getPath().split("/")[3];
+
 							// String requestServerTerm = request.getPath().split("/")[2];
 							if (engine.serverStateMachine.votedFor == "") {
 								ack.setPath(request.getPath() + "/accept");
 								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-								
-								engine.election.electionTimerTask(2000L);
 
-							} else if (engine.serverStateMachine.votedFor == serverWhoIsAskingForVote) {
-								ack.setPath(request.getPath() + "/accept");
-								
-								engine.election.electionTimerTask(2000L);
+								engine.election.electionTimerTask(4000L);
+
 							} else {
 								ack.setPath(request.getPath() + "/reject");
 							}
-						} 
-						else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
-							ack.setPath(request.getPath() + "/reject");
+						} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
+							if (engine.serverStateMachine.votedFor == "") {
+								ack.setPath(request.getPath() + "/accept");
+								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+
+								engine.election.electionTimerTask(4000L);
+
+							} else {
+								ack.setPath(request.getPath() + "/reject");
+							}
 						}
 					} else if (request.getPath().contains("/heartbeat")) {
 						ack.setPath(request.getPath() + "/success");
-						
-						engine.election.electionTimerTask(2000L);
+
+						if (engine.serverStateMachine.state != ServerStateMachine.ServerState.Leader) {
+							engine.election.electionTimerTask(4000L);
+						}
 					}
 
 					// TODO ack of work

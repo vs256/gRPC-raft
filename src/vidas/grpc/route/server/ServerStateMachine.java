@@ -16,7 +16,7 @@ public class ServerStateMachine {
     ServerStateMachine() {
         nominationVotes = 0;
         votedFor = "";
-        if(Engine.getInstance().serverName.contains("B")) { votedFor = "test";}
+        //if(Engine.getInstance().serverName.contains("B")) { votedFor = "test";}
         state = ServerState.Follower;
     }
 
