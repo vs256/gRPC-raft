@@ -70,7 +70,7 @@ public class Election extends Thread {
 					}
 
 				} else {
-					System.out.println("Time left:" + (seconds - (i % seconds)));
+					//System.out.println("Time left:" + (seconds - (i % seconds)));
 					Engine.getInstance().debugHelper.gui.setTimer(Integer.toString(seconds - (i % seconds)));
 				}
 

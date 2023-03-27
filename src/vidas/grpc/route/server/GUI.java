@@ -13,8 +13,33 @@ public class GUI implements ActionListener {
 
     public String timer;
 
-    public GUI(int offsetLocationX, int offsetLocationY) {
+    static void setLocationToCorner(JFrame frame, int offset) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        
 
+
+        int x = 0;
+        int y = 0;
+        if (offset == 1) { //top left
+            x = 0;
+            y = 0;
+        }
+        else if (offset == 2) { //top right
+            x = (int) (screenSize.getWidth() - frame.getWidth());
+            y = 0;
+        }
+        else if (offset == 3) { //bottom left
+            x = 0;
+            y = (int) (screenSize.getHeight() - frame.getHeight());
+        }
+        else if (offset == 4) {
+            x = (int) (screenSize.getWidth() - frame.getWidth());
+            y = (int) (screenSize.getHeight() - frame.getHeight());
+        }
+        frame.setLocation(x,y);
+    }
+
+    public GUI(int offset) {
         // // the clickable button
         // JButton button = new JButton("Click Me");
         // button.addActionListener(this);
@@ -34,29 +59,36 @@ public class GUI implements ActionListener {
         // frame.setVisible(true);
 
         final JFrame frame = new JFrame();
+        // frame.setLayout(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(new Dimension(650, 400));
-        frame.setLocation(new Point(400 + offsetLocationX, -300 + offsetLocationY));
+        frame.setSize(new Dimension(700, 400));
+        // frame.setLocation(new Point(400 + offsetLocationX, -300 + offsetLocationY));
+        setLocationToCorner(frame, offset);
+        // frame.setLocation(new Point(0,100));
+        // frame.setLocation(0,0);
+        // frame.setLocationRelativeTo(null);
+
         frame.setLayout(new FlowLayout());
 
         Engine engine = Engine.getInstance();
-        String str = " Server: "+engine.getServerName()+" ** " + "<br>Term: " + engine.serverTerm + " <br> State: "
-									+ engine.serverStateMachine.state.toString() + " <br> votedFor: "
-									+ engine.serverStateMachine.votedFor + " <br> nominationVotes: "
-									+ engine.serverStateMachine.nominationVotes
-									+ " <br> Type: initializing <br> Origin: "
-									+ " " + " <br> Destination: " + " "
-									+ " <br> Path: "
-									+ " " + " <br> "
-									+ " <br> Reason: initializing server "
-									+ " ** \n";
+        String str = " <b>Server</b>: " + engine.getServerName() + " " + "<br><br> <b>Term</b>: " + engine.serverTerm
+                + " <br> <b>State</b>: "
+                + engine.serverStateMachine.state.toString() + " <br> <b>votedFor</b>: "
+                + engine.serverStateMachine.votedFor + " <br> <b>nominationVotes</b>: "
+                + engine.serverStateMachine.nominationVotes
+                + " <br> <b>Type</b>: initializing <br> <b>Origin</b>: "
+                + " " + " <br> <b>Destination</b>: " + " "
+                + " <br> <b>Path</b>: "
+                + " " + " <br> "
+                + " <br> <b>Reason</b>: initializing server "
+                + " \n";
 
-        label = new JLabel("<html>"+str+"</html>");
-        label.setFont(new Font("Serif", Font.BOLD, 15));
+        label = new JLabel("<html>" + str + "</html>");
+        label.setFont(new Font("Tahoma", Font.PLAIN, 15));
         label.setHorizontalAlignment(JLabel.CENTER);
 
-        timerLabel = new JLabel("<html><br>Timer: 0<br></html>");
-        timerLabel.setFont(new Font("Serif", Font.BOLD, 15));
+        timerLabel = new JLabel("<html><br><b>Election Timer</b>: Initializing<br></html>");
+        timerLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
         timerLabel.setHorizontalAlignment(JLabel.CENTER);
 
         frame.add(label);
@@ -74,7 +106,7 @@ public class GUI implements ActionListener {
 
     public void setLabel(String str) {
         String[] stringArray = str.split("\\|\\|");
-        String labelString = "<html>Server " + Engine.getInstance().serverName + "<br>";
+        String labelString = "<html>Server " + Engine.getInstance().serverName + "<br><br>";
         for (int i = 0; i < stringArray.length; i++) {
             labelString = labelString + stringArray[i] + "<br>";
         }
@@ -82,8 +114,7 @@ public class GUI implements ActionListener {
         label.setText(labelString);
     }
 
-    public void setTimer(String str)
-    {
+    public void setTimer(String str) {
         String labelString = "<html>Election Timer: ";
         labelString += str + "</html>";
         timerLabel.setText(labelString);
