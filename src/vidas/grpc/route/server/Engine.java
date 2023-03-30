@@ -9,6 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 
+import vidas.grpc.route.server.DebugTools.DebugHelper;
+import vidas.grpc.route.server.StateMachine.ServerStateMachine;
+import vidas.grpc.route.server.Types.Link;
+import vidas.grpc.route.server.Types.Work;
+
 /**
  * Core components to process work; shared with/across all sessions.
  * 
@@ -21,12 +26,12 @@ public class Engine {
 	private static Engine instance;
 	private static Properties conf;
 
-	protected String serverName;
-	protected Long serverID;
-	protected Integer serverPort;
+	public String serverName;
+	public Long serverID;
+	public Integer serverPort;
 	private Long nextMessageID;
 
-	protected Long serverTerm;
+	public Long serverTerm;
 
 	/* workQueue/containers */
 	protected LinkedBlockingDeque<Work> workQueue, mgmtQueue;
@@ -34,15 +39,15 @@ public class Engine {
 	/* worker threads */
 	protected ArrayList<Worker> workers;
 
-	protected Election election;
+	public Election election;
 
 	public DebugHelper debugHelper;
 
 	/* connectivity */
-	protected ArrayList<Link> links;
+	public ArrayList<Link> links;
 
 
-	protected ServerStateMachine serverStateMachine;
+	public ServerStateMachine serverStateMachine;
 
 	public static Properties getConf() {
 		return conf;

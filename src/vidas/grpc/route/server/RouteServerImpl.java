@@ -16,6 +16,8 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import route.RouteServiceGrpc.RouteServiceImplBase;
+import vidas.grpc.route.server.StateMachine.ServerStateMachine;
+import vidas.grpc.route.server.Types.Work;
 
 public class RouteServerImpl extends RouteServiceImplBase {
 	private Server svr;
@@ -109,6 +111,11 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		return true;
 	}
 
+
+	/**
+	 * Server received a message! 
+	 * bi-directional request - there is no blocking
+	 */
 	@Override
 	public StreamObserver<route.Route> biDirectionalRequest(final StreamObserver<route.Route> responseObserver) {
 		return new StreamObserver<route.Route>() {
@@ -133,44 +140,9 @@ public class RouteServerImpl extends RouteServiceImplBase {
 					ack.setOrigin(Engine.getInstance().getServerID());
 					ack.setDestination(request.getOrigin());
 
-					Engine engine = Engine.getInstance();
-					String serverWhoIsAskingForVote = request.getPath().split("/")[3];
-					if (request.getPath().contains("/nominate")) {
-
-						if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
-
-							// String requestServerTerm = request.getPath().split("/")[2];
-							if (engine.serverStateMachine.votedFor == "") {
-								ack.setPath(request.getPath() + "/accept");
-								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-
-								engine.election.electionTimerTask(4000L);
-
-							} else {
-								ack.setPath(request.getPath() + "/reject");
-							}
-						} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
-							if (engine.serverStateMachine.votedFor == "") {
-								ack.setPath(request.getPath() + "/accept");
-								engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
-
-								engine.election.electionTimerTask(4000L);
-
-							} else {
-								ack.setPath(request.getPath() + "/reject");
-							}
-						}
-					} else if (request.getPath().contains("/heartbeat")) {
-						ack.setPath(request.getPath() + "/success");
-
-						if (engine.serverStateMachine.state != ServerStateMachine.ServerState.Leader) {
-							engine.serverTerm = Long.parseLong(request.getPath().split("/")[2]); // make sure server
-																									// term is same as
-																									// leader just in
-																									// case
-							engine.election.electionTimerTask(4000L);
-						}
-					}
+					//handle logic for incoming election request
+					handleIncomingElection(request, ack);
+					//end of election logic
 
 					// TODO ack of work
 					ack.setPayload(ack(request));
@@ -197,11 +169,55 @@ public class RouteServerImpl extends RouteServiceImplBase {
 	}
 
 
+	public void handleIncomingElection(route.Route request, route.Route.Builder ack)
+	{
+		Engine engine = Engine.getInstance();
+		String serverWhoIsAskingForVote = request.getPath().split("/")[3];
+		if (request.getPath().contains("/nominate")) {
+
+			if (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Follower) {
+
+				// String requestServerTerm = request.getPath().split("/")[2];
+				if (engine.serverStateMachine.votedFor == "") {
+					ack.setPath(request.getPath() + "/accept");
+					engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+
+					engine.election.electionTimerTask(4000L);
+
+				} else {
+					ack.setPath(request.getPath() + "/reject");
+				}
+			} else if (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Candidate) {
+				if (engine.serverStateMachine.votedFor == "") {
+					ack.setPath(request.getPath() + "/accept");
+					engine.serverStateMachine.votedFor = serverWhoIsAskingForVote;
+
+					engine.election.electionTimerTask(4000L);
+
+				} else {
+					ack.setPath(request.getPath() + "/reject");
+				}
+			}
+		} else if (request.getPath().contains("/heartbeat")) {
+			ack.setPath(request.getPath() + "/success");
+
+			if (engine.serverStateMachine.state.getStateRole() != ServerStateMachine.ServerStateRoles.Leader) {
+				engine.serverTerm = Long.parseLong(request.getPath().split("/")[2]); // make sure server
+																						// term is same as
+																						// leader just in
+																						// case
+				engine.election.electionTimerTask(4000L);
+			}
+		}
+	}
+
+
 	
 
 	
 	/**
-	 * server received a message!
+	 * Server received a message! 
+	 * This is a blocking message meaning server is stuck waiting for a response
 	 */
 	@Override
 	public void blockingServerRequest(route.Route request, StreamObserver<route.Route> responseObserver) {

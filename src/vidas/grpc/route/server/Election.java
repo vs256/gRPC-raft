@@ -4,6 +4,8 @@ import java.util.*;
 
 import com.google.protobuf.ByteString;
 
+import vidas.grpc.route.server.StateMachine.ServerStateMachine;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +42,9 @@ public class Election extends Thread {
 					electionTimerTask(0); // reset election timer for itself so it keeps going
 
 					Engine engine = Engine.getInstance();
-					if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Follower) {
+					if (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Follower) {
 
-						engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // upgrade
+						engine.serverStateMachine.state.nextState(); // upgrade
 																										// follower
 																										// to candidate
 
@@ -54,18 +56,18 @@ public class Election extends Thread {
 						// DEBUG PRINT
 
 						engine.serverStateMachine.votedFor = "";
-						engine.serverStateMachine.state.sendNominateRequest();
+						engine.serverStateMachine.state.sendRequest();
 
-					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate) {
+					} else if (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Candidate) {
 						// did not get back majority nominate requests, trying again as a candidate
 						// after increment
 
 						engine.serverTerm++;
 						engine.serverStateMachine.votedFor = "";
-						engine.serverStateMachine.state.sendNominateRequest(); // vote for me request
+						engine.serverStateMachine.state.sendRequest(); // vote for me request
 
-					} else if (engine.serverStateMachine.state == ServerStateMachine.ServerState.Leader) {
-						engine.serverStateMachine.state.sendLeaderHeartbeat();
+					} else if (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Leader) {
+						engine.serverStateMachine.state.sendRequest();
 						System.out.println("sending leader heartbeat " + engine.getNextMessageID());
 					}
 

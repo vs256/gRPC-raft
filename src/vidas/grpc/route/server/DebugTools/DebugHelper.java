@@ -1,4 +1,6 @@
-package vidas.grpc.route.server;
+package vidas.grpc.route.server.DebugTools;
+
+import vidas.grpc.route.server.Engine;
 
 public class DebugHelper {
 
@@ -6,7 +8,7 @@ public class DebugHelper {
 
     private Engine engine;
 
-    DebugHelper(Engine eng) {
+    public DebugHelper(Engine eng) {
         engine = eng;
         System.out.println("gui");
         int offset = (int) (long) (Engine.getInstance().serverID / 1000);
@@ -25,7 +27,7 @@ public class DebugHelper {
         }
         // DEBUG PRINT
         String str = " " + "<b>Term</b>: " + engine.serverTerm + " || <b>State</b>: "
-                + engine.serverStateMachine.state.toString() + " || <b>votedFor</b>: "
+                + engine.serverStateMachine.state.getStateRole().toString() + " || <b>votedFor</b>: "
                 + engine.serverStateMachine.votedFor + " || <b>nominationVotes</b>: "
                 + engine.serverStateMachine.nominationVotes
                 + " || <b>Type</b>: " + type + " || <b>Origin</b>: "
@@ -41,7 +43,7 @@ public class DebugHelper {
     public void debugPrintCustom(String origin, String destination, String path, String type, String reason) {
         // DEBUG PRINT
         String str = " ** " + "<b>Term</b>: " + engine.serverTerm + " || <b>State</b>: "
-                + engine.serverStateMachine.state.toString() + " || <b>votedFor</b>: "
+                + engine.serverStateMachine.state.getStateRole().toString() + " || <b>votedFor</b>: "
                 + engine.serverStateMachine.votedFor + " || <b>nominationVotes</b>: "
                 + engine.serverStateMachine.nominationVotes
                 + " || <b>Type</b>: " + type + " || <b>Origin</b>: "

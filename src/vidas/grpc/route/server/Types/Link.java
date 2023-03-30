@@ -1,4 +1,4 @@
-package vidas.grpc.route.server;
+package vidas.grpc.route.server.Types;
 
 public class Link {
 	private String serverName;

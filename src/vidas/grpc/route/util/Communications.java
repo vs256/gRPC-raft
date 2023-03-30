@@ -1,4 +1,4 @@
-package vidas.grpc.route.server;
+package vidas.grpc.route.util;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +12,7 @@ import io.grpc.stub.StreamObserver;
 import route.Route;
 import route.RouteServiceGrpc;
 import vidas.grpc.route.server.Engine;
+import vidas.grpc.route.server.StateMachine.ServerStateMachine;
 
 public class Communications {
 
@@ -48,7 +49,7 @@ public class Communications {
 				if (response.getPath().contains("/reject")) {
 
 				} else if (response.getPath().contains("/accept")
-						&& (engine.serverStateMachine.state == ServerStateMachine.ServerState.Candidate)) {
+						&& (engine.serverStateMachine.state.getStateRole() == ServerStateMachine.ServerStateRoles.Candidate)) {
 
 					engine.serverStateMachine.nominationVotes++;
 
@@ -66,7 +67,7 @@ public class Communications {
 								" majority nomination votes received | becoming leader ");
 						// DEBUG PRINT
 
-						engine.serverStateMachine.state = engine.serverStateMachine.state.nextState(); // going from
+						engine.serverStateMachine.state.nextState(); // going from
 																										// candidate
 																										// to leader
 

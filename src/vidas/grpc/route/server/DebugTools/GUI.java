@@ -1,6 +1,9 @@
-package vidas.grpc.route.server;
+package vidas.grpc.route.server.DebugTools;
 
 import javax.swing.*;
+
+import vidas.grpc.route.server.Engine;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -73,7 +76,7 @@ public class GUI implements ActionListener {
         Engine engine = Engine.getInstance();
         String str = " <b>Server</b>: " + engine.getServerName() + " " + "<br><br> <b>Term</b>: " + engine.serverTerm
                 + " <br> <b>State</b>: "
-                + engine.serverStateMachine.state.toString() + " <br> <b>votedFor</b>: "
+                + engine.serverStateMachine.state.getStateRole().toString() + " <br> <b>votedFor</b>: "
                 + engine.serverStateMachine.votedFor + " <br> <b>nominationVotes</b>: "
                 + engine.serverStateMachine.nominationVotes
                 + " <br> <b>Type</b>: initializing <br> <b>Origin</b>: "
