@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.10.1.jar"/>
 	<classpathentry kind="lib" path="lib-ref2/failureaccess-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib-ref2/javax.annotation-api-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib-ref2/grpc-all-1.48.1.jar"/>
 	<classpathentry kind="lib" path="lib-ref2/grpc-alts-1.48.1.jar"/>
 	<classpathentry kind="lib" path="lib-ref2/grpc-api-1.48.1.jar"/>

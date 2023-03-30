@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 
+import fileStream.FileServiceGrpc;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import vidas.grpc.route.server.DebugTools.DebugHelper;
 import vidas.grpc.route.server.StateMachine.ServerStateMachine;
 import vidas.grpc.route.server.Types.Link;
@@ -45,6 +48,9 @@ public class Engine {
 
 	/* connectivity */
 	public ArrayList<Link> links;
+	
+	protected ArrayList<FileServiceGrpc.FileServiceStub> asyncStubs;
+
 
 
 	public ServerStateMachine serverStateMachine;
@@ -120,20 +126,20 @@ public class Engine {
 
 		serverName = conf.getProperty("server.name"); // set server name
 
-		Engine.logger.info("Starting Queues");
-		workQueue = new LinkedBlockingDeque<Work>();
-		//mgmtQueue = new LinkedBlockingDeque<Work>();
+		// Engine.logger.info("Starting Queues");
+		// workQueue = new LinkedBlockingDeque<Work>();
+		// //mgmtQueue = new LinkedBlockingDeque<Work>();
 
-		Engine.logger.info("Starting Workers");
-		workers = new ArrayList<Worker>();
-		var w = new Worker();
-		workers.add(w);
-		w.start();
+		// Engine.logger.info("Starting Workers");
+		// workers = new ArrayList<Worker>();
+		// var w = new Worker();
+		// workers.add(w);
+		// w.start();
 
 
-		Engine.logger.info("Starting Election");
-		election = new Election();
-		election.start();
+		// Engine.logger.info("Starting Election");
+		// election = new Election();
+		// election.start();
 
 		serverStateMachine = new ServerStateMachine(); // server state machine
 		serverTerm = 0L;
@@ -141,6 +147,16 @@ public class Engine {
 		// DebugHelper
 		debugHelper = new DebugHelper(this);
 		//
+
+
+		// create an asyncStub for Client
+		Engine.logger.info("Starting asyncStub client connection");
+		int clientPort = Integer.parseInt(conf.getProperty("server.client.port"));
+		asyncStubs = new ArrayList<FileServiceGrpc.FileServiceStub>();
+		ManagedChannel ch = ManagedChannelBuilder.forAddress("localhost", clientPort).usePlaintext()
+				.build();
+		asyncStubs.add(FileServiceGrpc.newStub(ch));
+		
 
 		Engine.logger.info("initializaton complete");
 	}

@@ -1,0 +1,43 @@
+/* Reference
+https://www.vinsguru.com/grpc-file-upload-client-streaming/
+*/
+
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_multiple_files = true;
+package fileStream;
+
+
+service FileService {
+    rpc upload(stream FileUploadRequest) returns(FileUploadResponse);
+} 
+ 
+message MetaData {
+    string header = 1;
+    string type = 2;
+}
+
+message FileContent {
+    bytes content = 1;
+}
+
+enum FileStatus {
+    PENDING = 0;
+    IN_PROGRESS = 1;
+    SUCCESS = 2;
+    FAILED = 3;
+}
+
+message FileUploadRequest {
+    oneof request {
+        MetaData metadata = 1;
+        FileContent file = 2;
+    }
+}
+
+message FileUploadResponse {
+    string name = 1;
+    FileStatus status = 2;
+}
+ 
