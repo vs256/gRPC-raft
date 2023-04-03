@@ -19,6 +19,26 @@ public final class RouteOuterClass {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_route_Route_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_route_MetaData_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_route_MetaData_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_route_FileContent_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_route_FileContent_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_route_FileUploadRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_route_FileUploadRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_route_FileUploadResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_route_FileUploadResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -30,11 +50,22 @@ public final class RouteOuterClass {
     java.lang.String[] descriptorData = {
       "\n\013route.proto\022\005route\"W\n\005Route\022\n\n\002id\030\001 \001(" +
       "\003\022\016\n\006origin\030\002 \001(\003\022\023\n\013destination\030\003 \001(\003\022\014" +
-      "\n\004path\030\004 \001(\t\022\017\n\007payload\030\005 \001(\0142\177\n\014RouteSe" +
+      "\n\004path\030\004 \001(\t\022\017\n\007payload\030\005 \001(\014\"(\n\010MetaDat" +
+      "a\022\016\n\006header\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\"\036\n\013FileC" +
+      "ontent\022\017\n\007content\030\001 \001(\014\"g\n\021FileUploadReq" +
+      "uest\022#\n\010metadata\030\001 \001(\0132\017.route.MetaDataH" +
+      "\000\022\"\n\004file\030\002 \001(\0132\022.route.FileContentH\000B\t\n" +
+      "\007request\"E\n\022FileUploadResponse\022\014\n\004name\030\001" +
+      " \001(\t\022!\n\006status\030\002 \001(\0162\021.route.FileStatus*" +
+      "C\n\nFileStatus\022\013\n\007PENDING\020\000\022\017\n\013IN_PROGRES" +
+      "S\020\001\022\013\n\007SUCCESS\020\002\022\n\n\006FAILED\020\0032\210\002\n\014RouteSe" +
       "rvice\0225\n\025blockingServerRequest\022\014.route.R" +
       "oute\032\014.route.Route\"\000\0228\n\024biDirectionalReq" +
-      "uest\022\014.route.Route\032\014.route.Route\"\000(\0010\001B\004" +
-      "H\001P\001b\006proto3"
+      "uest\022\014.route.Route\032\014.route.Route\"\000(\0010\001\022?" +
+      "\n\006upload\022\030.route.FileUploadRequest\032\031.rou" +
+      "te.FileUploadResponse(\001\022F\n\rforwardUpload" +
+      "\022\030.route.FileUploadRequest\032\031.route.FileU" +
+      "ploadResponse(\001B\004H\001P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -46,6 +77,30 @@ public final class RouteOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_route_Route_descriptor,
         new java.lang.String[] { "Id", "Origin", "Destination", "Path", "Payload", });
+    internal_static_route_MetaData_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_route_MetaData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_route_MetaData_descriptor,
+        new java.lang.String[] { "Header", "Type", });
+    internal_static_route_FileContent_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_route_FileContent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_route_FileContent_descriptor,
+        new java.lang.String[] { "Content", });
+    internal_static_route_FileUploadRequest_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_route_FileUploadRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_route_FileUploadRequest_descriptor,
+        new java.lang.String[] { "Metadata", "File", "Request", });
+    internal_static_route_FileUploadResponse_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_route_FileUploadResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_route_FileUploadResponse_descriptor,
+        new java.lang.String[] { "Name", "Status", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

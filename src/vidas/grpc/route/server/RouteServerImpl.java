@@ -3,6 +3,10 @@ package vidas.grpc.route.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,19 +14,42 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 import com.google.protobuf.ByteString;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.grpc.stub.StreamObserver;
 import route.RouteServiceGrpc.RouteServiceImplBase;
 import vidas.grpc.route.server.StateMachine.ServerStateMachine;
+import vidas.grpc.route.server.Types.Link;
 import vidas.grpc.route.server.Types.Work;
+
+
+import route.RouteServiceGrpc.RouteServiceImplBase;
+import route.FileUploadRequest;
+import route.FileUploadResponse;
+import route.RouteServiceGrpc;
+import route.MetaData;
+import route.FileContent;
+import route.FileStatus;
 
 public class RouteServerImpl extends RouteServiceImplBase {
 	private Server svr;
-
+	protected static Logger logger = LoggerFactory.getLogger("serverImpl");
 	private final ConcurrentMap<route.Route, List<route.Route>> routes = new ConcurrentHashMap<route.Route, List<route.Route>>();
+	
+	private static final Path OUTPUT_PATH = Paths.get(
+		"data-storage/server-output");
 
 	/**
 	 * Configuration of the server's identity, port, and role
@@ -112,6 +139,220 @@ public class RouteServerImpl extends RouteServiceImplBase {
 	}
 
 
+
+	
+//FILE UPLOAD REQUESTS
+
+/**
+	 * server received a upload message!
+	 */
+	@Override
+	public StreamObserver<FileUploadRequest> forwardUpload(StreamObserver<FileUploadResponse> responseObserver) {
+		logger.info("Receiving file upload request...");
+		return new StreamObserver<FileUploadRequest>() {
+			// upload context variables
+			OutputStream writer = null;
+			FileStatus fileStatus = FileStatus.IN_PROGRESS;
+			boolean appendOnNextOpen = true;
+			long t1 = System.currentTimeMillis();
+			String[] cols;
+			int cntOfChunks;
+			Long cntOfLines = 0L;
+
+			String headerOfFile;
+
+			@Override
+			public void onNext(FileUploadRequest fileUploadRequest) {
+				if (fileUploadRequest.hasMetadata()) {
+					headerOfFile = fileUploadRequest.getMetadata().getHeader();
+					cols = headerOfFile.split(",", -1);
+
+					// logger.info("---- Get metadata (Header of the file) ----");
+					// logger.info(headerOfFile);
+				} else {
+					long t3 = System.currentTimeMillis();
+					logger.info("---- Received No." + cntOfChunks + " chunk ----");
+
+					// Long lines = writeFile(fileUploadRequest.getFile().getContent(), cols.length);
+					// cntOfLines = lines + cntOfLines;
+
+					
+					int j = cntOfChunks%3;
+					int port = Engine.getInstance().links.get(j).getPort();
+					int serverID = Engine.getInstance().links.get(j).getServerID();
+					System.out.println("Sending to server " + serverID + " on port " + port + "");
+					Engine.getInstance().serverStateMachine.state.sendLeaderFileWriteRequest(port, serverID, fileUploadRequest.getFile().getContent(), headerOfFile);
+					
+					cntOfChunks++;
+
+					long t4 = System.currentTimeMillis();
+					logger.info(
+							"---- Finished written No." + cntOfChunks + " chunk (Time: " + (t4 - t3) + ") ----");
+				}
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				fileStatus = FileStatus.FAILED;
+				logger.info("Request Failed: {}", Status.fromThrowable(t));
+				this.onCompleted();
+			}
+
+			@Override
+			public void onCompleted() {
+				logger.info("---- Received " + cntOfChunks + " chunks in total ----");
+				logger.info("---- Wrote " + cntOfLines + " lines in total ----");
+				// closeFile(writer);
+				fileStatus = FileStatus.IN_PROGRESS.equals(fileStatus) ? FileStatus.SUCCESS : fileStatus;
+				logger.info("fileStatus: " + fileStatus);
+				FileUploadResponse response = FileUploadResponse.newBuilder()
+						.setStatus(fileStatus)
+						.build();
+				responseObserver.onNext(response);
+				responseObserver.onCompleted();
+				long t2 = System.currentTimeMillis();
+				System.out.println("File receive and partition | Time: " + (t2 - t1) + "ms");
+			}
+		};
+	}
+
+
+
+	/**
+	 * server received a upload message!
+	 */
+	@Override
+	public StreamObserver<FileUploadRequest> upload(StreamObserver<FileUploadResponse> responseObserver) {
+		logger.info("Receiving file upload request...");
+		return new StreamObserver<FileUploadRequest>() {
+			// upload context variables
+			OutputStream writer = null;
+			FileStatus fileStatus = FileStatus.IN_PROGRESS;
+			boolean appendOnNextOpen = true;
+			long t1 = System.currentTimeMillis();
+			String[] cols;
+			int cntOfChunks;
+			Long cntOfLines = 0L;
+
+			@Override
+			public void onNext(FileUploadRequest fileUploadRequest) {
+				if (fileUploadRequest.hasMetadata()) {
+					var headerOfFile = fileUploadRequest.getMetadata().getHeader();
+					cols = headerOfFile.split(",", -1);
+
+					// logger.info("---- Get metadata (Header of the file) ----");
+					// logger.info(headerOfFile);
+					System.out.println("header: " + headerOfFile);
+				} else {
+					long t3 = System.currentTimeMillis();
+					logger.info("---- Received No." + cntOfChunks + " chunk ----");
+
+					Long lines = null;
+					try {
+						
+						lines = writeFile(fileUploadRequest.getFile().getContent(), cols.length);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					cntOfLines = lines + cntOfLines;
+
+					
+					// int j = cntOfChunks%4;
+					// int port = Engine.getInstance().links.get(j).getPort();
+					// int serverID = Engine.getInstance().links.get(j).getServerID();
+					// Engine.getInstance().serverStateMachine.state.sendLeaderFileWriteRequest(port, serverID, fileUploadRequest.getFile().getContent(), cols.length);
+					
+					cntOfChunks++;
+
+					long t4 = System.currentTimeMillis();
+					logger.info(
+							"---- Finished written No." + cntOfChunks + " chunk (Time: " + (t4 - t3) + ") ----");
+				}
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				fileStatus = FileStatus.FAILED;
+				logger.info("Request Failed: {}", Status.fromThrowable(t));
+				this.onCompleted();
+			}
+
+			@Override
+			public void onCompleted() {
+				logger.info("---- Received " + cntOfChunks + " chunks in total ----");
+				logger.info("---- Wrote " + cntOfLines + " lines in total ----");
+				// closeFile(writer);
+				fileStatus = FileStatus.IN_PROGRESS.equals(fileStatus) ? FileStatus.SUCCESS : fileStatus;
+				logger.info("fileStatus: " + fileStatus);
+				FileUploadResponse response = FileUploadResponse.newBuilder()
+						.setStatus(fileStatus)
+						.build();
+				responseObserver.onNext(response);
+				responseObserver.onCompleted();
+				long t2 = System.currentTimeMillis();
+				System.out.println("File receive and partition | Time: " + (t2 - t1) + "ms");
+			}
+		};
+	}
+
+	private Long writeFile(ByteString content, int colsLength) throws IOException {
+		byte[] byteArray = content.toByteArray();
+
+		ByteArrayInputStream stream = new ByteArrayInputStream(byteArray);
+		InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+		BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+		String line;
+		Long numOfLines = 0L;
+		while ((line = bufferedReader.readLine()) != null) {
+			System.out.println(line);
+			//
+			String[] colStrings = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+			String vc = colStrings[5];
+
+			// discard records of which the number of fields doesn't equal to number of
+			// columns
+			if (colStrings.length != colsLength) {
+				System.out.println("Drop this line: \n" + line);
+				continue;
+			}
+
+			// split "Issue Date" and extract month, day and year
+			String[] timeArray = colStrings[4].split("/");
+
+			var newDirectory = timeArray[2] + "/" + timeArray[1] + "/" + timeArray[0];
+			Path directoryPath = OUTPUT_PATH.resolve(newDirectory);
+
+			// make a new directory if not exist
+			File directory = new File(directoryPath.toString());
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+			directory.setWritable(true);
+			Path filePath = directoryPath.resolve(vc + ".csv");
+
+			// write a line to the csv file
+			try {
+				OutputStream writer = Files.newOutputStream(filePath, StandardOpenOption.CREATE,
+						StandardOpenOption.APPEND);
+				writer.write((line + "\n").getBytes());
+				writer.flush();
+				writer.close();
+
+				numOfLines++;
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return numOfLines;
+	}
+//ENDOF FILE UPLOAD REQUESTS
+
+
+
+//ELECTION REQUEST
 	/**
 	 * Server received a message! 
 	 * bi-directional request - there is no blocking
@@ -142,7 +383,11 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 					//handle logic for incoming election request
 					handleIncomingElection(request, ack);
-					//end of election logic
+					//ENDOF election logic
+
+					//handle logic for incoming storage write request
+					handleIncomingStorageWrite(request, ack);
+					//ENDOF STORAGE WRITE REQUEST
 
 					// TODO ack of work
 					ack.setPayload(ack(request));
@@ -168,6 +413,22 @@ public class RouteServerImpl extends RouteServiceImplBase {
 		};
 	}
 
+	
+	public void handleIncomingStorageWrite(route.Route request, route.Route.Builder ack)
+	{
+		Engine engine = Engine.getInstance();
+		if (request.getPath().contains("/storage")) {
+			int colsLength = Integer.parseInt(request.getPath().split("/")[1]);
+
+			try {
+				Long lines = writeFile(request.getPayload(), colsLength);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 
 	public void handleIncomingElection(route.Route request, route.Route.Builder ack)
 	{
@@ -210,11 +471,13 @@ public class RouteServerImpl extends RouteServiceImplBase {
 			}
 		}
 	}
+//ENDOF ELECTION REQUEST
 
+	
 
 	
 
-	
+//BLOCKING REQUEST
 	/**
 	 * Server received a message! 
 	 * This is a blocking message meaning server is stuck waiting for a response
@@ -278,3 +541,4 @@ public class RouteServerImpl extends RouteServiceImplBase {
 
 	}
 }
+//ENDOF BLOCKING REQUEST

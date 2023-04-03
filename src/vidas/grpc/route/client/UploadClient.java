@@ -30,13 +30,13 @@ import io.grpc.stub.StreamObserver;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
-import fileStream.FileServiceGrpc.FileServiceImplBase;
-import fileStream.FileUploadRequest;
-import fileStream.FileUploadResponse;
-import fileStream.FileServiceGrpc;
-import fileStream.MetaData;
-import fileStream.FileContent;
-import fileStream.FileStatus;
+import route.RouteServiceGrpc.RouteServiceImplBase;
+import route.FileUploadRequest;
+import route.FileUploadResponse;
+import route.RouteServiceGrpc;
+import route.MetaData;
+import route.FileContent;
+import route.FileStatus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,25 +45,25 @@ import com.google.protobuf.ByteString;
 
 public class UploadClient {
 
-    private static final String filepath = 
-    "data-storage/raw-original-files/nyc-parking/parkingviolations-2014/parkingviolations/Parking_Violations_Issued_-_Fiscal_Year_2014.csv";
-    // private static final String filepath =
-    // "data-storage/raw-original-files/nyc-parking/parkingviolations-2014/parkingviolations/EXAMPLE_SMALL_SUBSET.csv";
+    // private static final String filepath = 
+    // "data-storage/raw-original-files/nyc-parking/parkingviolations-2014/parkingviolations/Parking_Violations_Issued_-_Fiscal_Year_2014.csv";
+    private static final String filepath =
+    "data-storage/raw-original-files/nyc-parking/parkingviolations-2014/parkingviolations/EXAMPLE_SMALL_SUBSET.csv";
 
-    private static final int MAX_LINES = 5000;
+    private static final int MAX_LINES = 500;
     private static Long destID;
     private static Long clientID;
     private static int clientPort;
     private static int linkedPort;
     // private final RouteServiceGrpc.RouteServiceBlockingStub stub;
-    private final FileServiceGrpc.FileServiceStub asyncStub;
+    private final RouteServiceGrpc.RouteServiceStub asyncStub;
 
     protected static Properties conf;
     protected static Logger logger = LoggerFactory.getLogger("client");
 
     public UploadClient(ManagedChannel ch) {
         // stub = RouteServiceGrpc.newBlockingStub(ch);
-        asyncStub = FileServiceGrpc.newStub(ch);
+        asyncStub = RouteServiceGrpc.newStub(ch);
     }
 
     public static void configure(Properties conf) {
@@ -126,7 +126,7 @@ public class UploadClient {
     public void uploadRequest() {
         logger.info("** Client make upload request **");
 
-        StreamObserver<FileUploadRequest> requestObserver = asyncStub.upload(new StreamObserver<FileUploadResponse>() {
+        StreamObserver<FileUploadRequest> requestObserver = asyncStub.forwardUpload(new StreamObserver<FileUploadResponse>() {
             @Override
             public void onNext(FileUploadResponse fileUploadResponse) {
                 System.out.println(

@@ -77,6 +77,68 @@ public final class RouteServiceGrpc {
     return getBiDirectionalRequestMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<route.FileUploadRequest,
+      route.FileUploadResponse> getUploadMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "upload",
+      requestType = route.FileUploadRequest.class,
+      responseType = route.FileUploadResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+  public static io.grpc.MethodDescriptor<route.FileUploadRequest,
+      route.FileUploadResponse> getUploadMethod() {
+    io.grpc.MethodDescriptor<route.FileUploadRequest, route.FileUploadResponse> getUploadMethod;
+    if ((getUploadMethod = RouteServiceGrpc.getUploadMethod) == null) {
+      synchronized (RouteServiceGrpc.class) {
+        if ((getUploadMethod = RouteServiceGrpc.getUploadMethod) == null) {
+          RouteServiceGrpc.getUploadMethod = getUploadMethod =
+              io.grpc.MethodDescriptor.<route.FileUploadRequest, route.FileUploadResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "upload"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.FileUploadRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.FileUploadResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("upload"))
+              .build();
+        }
+      }
+    }
+    return getUploadMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<route.FileUploadRequest,
+      route.FileUploadResponse> getForwardUploadMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "forwardUpload",
+      requestType = route.FileUploadRequest.class,
+      responseType = route.FileUploadResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+  public static io.grpc.MethodDescriptor<route.FileUploadRequest,
+      route.FileUploadResponse> getForwardUploadMethod() {
+    io.grpc.MethodDescriptor<route.FileUploadRequest, route.FileUploadResponse> getForwardUploadMethod;
+    if ((getForwardUploadMethod = RouteServiceGrpc.getForwardUploadMethod) == null) {
+      synchronized (RouteServiceGrpc.class) {
+        if ((getForwardUploadMethod = RouteServiceGrpc.getForwardUploadMethod) == null) {
+          RouteServiceGrpc.getForwardUploadMethod = getForwardUploadMethod =
+              io.grpc.MethodDescriptor.<route.FileUploadRequest, route.FileUploadResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "forwardUpload"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.FileUploadRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  route.FileUploadResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new RouteServiceMethodDescriptorSupplier("forwardUpload"))
+              .build();
+        }
+      }
+    }
+    return getForwardUploadMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -139,6 +201,20 @@ public final class RouteServiceGrpc {
       return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getBiDirectionalRequestMethod(), responseObserver);
     }
 
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.FileUploadRequest> upload(
+        io.grpc.stub.StreamObserver<route.FileUploadResponse> responseObserver) {
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getUploadMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.FileUploadRequest> forwardUpload(
+        io.grpc.stub.StreamObserver<route.FileUploadResponse> responseObserver) {
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getForwardUploadMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -155,6 +231,20 @@ public final class RouteServiceGrpc {
                 route.Route,
                 route.Route>(
                   this, METHODID_BI_DIRECTIONAL_REQUEST)))
+          .addMethod(
+            getUploadMethod(),
+            io.grpc.stub.ServerCalls.asyncClientStreamingCall(
+              new MethodHandlers<
+                route.FileUploadRequest,
+                route.FileUploadResponse>(
+                  this, METHODID_UPLOAD)))
+          .addMethod(
+            getForwardUploadMethod(),
+            io.grpc.stub.ServerCalls.asyncClientStreamingCall(
+              new MethodHandlers<
+                route.FileUploadRequest,
+                route.FileUploadResponse>(
+                  this, METHODID_FORWARD_UPLOAD)))
           .build();
     }
   }
@@ -187,6 +277,22 @@ public final class RouteServiceGrpc {
         io.grpc.stub.StreamObserver<route.Route> responseObserver) {
       return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
           getChannel().newCall(getBiDirectionalRequestMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.FileUploadRequest> upload(
+        io.grpc.stub.StreamObserver<route.FileUploadResponse> responseObserver) {
+      return io.grpc.stub.ClientCalls.asyncClientStreamingCall(
+          getChannel().newCall(getUploadMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<route.FileUploadRequest> forwardUpload(
+        io.grpc.stub.StreamObserver<route.FileUploadResponse> responseObserver) {
+      return io.grpc.stub.ClientCalls.asyncClientStreamingCall(
+          getChannel().newCall(getForwardUploadMethod(), getCallOptions()), responseObserver);
     }
   }
 
@@ -237,6 +343,8 @@ public final class RouteServiceGrpc {
 
   private static final int METHODID_BLOCKING_SERVER_REQUEST = 0;
   private static final int METHODID_BI_DIRECTIONAL_REQUEST = 1;
+  private static final int METHODID_UPLOAD = 2;
+  private static final int METHODID_FORWARD_UPLOAD = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -272,6 +380,12 @@ public final class RouteServiceGrpc {
         case METHODID_BI_DIRECTIONAL_REQUEST:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.biDirectionalRequest(
               (io.grpc.stub.StreamObserver<route.Route>) responseObserver);
+        case METHODID_UPLOAD:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.upload(
+              (io.grpc.stub.StreamObserver<route.FileUploadResponse>) responseObserver);
+        case METHODID_FORWARD_UPLOAD:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.forwardUpload(
+              (io.grpc.stub.StreamObserver<route.FileUploadResponse>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -325,6 +439,8 @@ public final class RouteServiceGrpc {
               .setSchemaDescriptor(new RouteServiceFileDescriptorSupplier())
               .addMethod(getBlockingServerRequestMethod())
               .addMethod(getBiDirectionalRequestMethod())
+              .addMethod(getUploadMethod())
+              .addMethod(getForwardUploadMethod())
               .build();
         }
       }

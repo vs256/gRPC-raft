@@ -9,6 +9,10 @@ service RouteService {
    rpc blockingServerRequest(Route) returns (Route) {} //a simple RPC where client sends a request to server using stub & waits for a response to comeback, like a normal function call
 
   rpc biDirectionalRequest(stream Route) returns (stream Route) {} //bidirectional communication
+
+  rpc upload(stream FileUploadRequest) returns(FileUploadResponse);
+  rpc forwardUpload(stream FileUploadRequest) returns(FileUploadResponse);
+
   }
 
 // basic message correspondence between two points. Additional metadata 
@@ -22,3 +26,31 @@ message Route {
   bytes payload = 5;
 }
 
+//File upload stuff
+message MetaData {
+  string header = 1;
+  string type = 2;
+}
+
+message FileContent {
+  bytes content = 1;
+}
+
+enum FileStatus {
+  PENDING = 0;
+  IN_PROGRESS = 1;
+  SUCCESS = 2;
+  FAILED = 3;
+}
+
+message FileUploadRequest {
+  oneof request {
+      MetaData metadata = 1;
+      FileContent file = 2;
+  }
+}
+
+message FileUploadResponse {
+  string name = 1;
+  FileStatus status = 2;
+}
